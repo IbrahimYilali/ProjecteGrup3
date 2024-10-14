@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
           <Button
             title="Sign Up"
             color="white" // Color del text del botó
-            onPress={() => navigation.navigate('Details')}
+            onPress={() => navigation.navigate('Page2')}
           />
         </View>
       </View>

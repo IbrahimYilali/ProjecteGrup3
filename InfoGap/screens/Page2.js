@@ -1,75 +1,120 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import React, { useState } from 'react';
+import { View, Text, Button, TextInput, StyleSheet, ImageBackground } from 'react-native';
 
-// Conjunt de localitzacions de drift al Japó (latitud, longitud, descripció)
-const locations = [
-  { id: 1, latitude: 35.6062, longitude: 139.4044, title: "Daikoku Futo", description: "Un dels llocs més populars per fer drift a Yokohama." },
-  { id: 2, latitude: 35.7051, longitude: 139.8125, title: "Tama River", description: "Zona coneguda per les curses de carrer a Tòquio." },
-  { id: 3, latitude: 34.6959, longitude: 135.5104, title: "Meihan Sportsland", description: "Un circuit conegut a Nara per competicions de drift." },
-  { id: 4, latitude: 34.4697, longitude: 135.7947, title: "Kansai Circuit", description: "Un circuit molt popular entre els aficionats al drift a Osaka." },
-  { id: 5, latitude: 35.3342, longitude: 138.6939, title: "Fuji Speedway", description: "Un circuit emblemàtic que acull esdeveniments de motors." },
-  { id: 6, latitude: 35.4101, longitude: 138.2492, title: "Hakone Turnpike", description: "Una carretera muntanyenca popular per a les curses de drift." },
-  { id: 7, latitude: 35.3606, longitude: 138.7274, title: "Izu Skyline", description: "Una carretera escènica ideal per fer drift i gaudir de les vistes." },
-  { id: 8, latitude: 37.7922, longitude: 139.0918, title: "Aso Farm Land", description: "Un bon lloc per a l'exhibició de vehicles i activitats de drift." },
-];
+// Importa la imatge de fons
+const backgroundImage = require('../assets/images/fondo.png'); // Ajusta el camí a la imatge
 
 export default function Page2({ navigation }) {
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSignUp = () => {
+    if (password !== confirmPassword) {
+      alert("Les contrasenyes no coincideixen!");
+      return;
+    }
+
+    // Aquí podries agregar la lògica de registre
+    console.log('Email:', email);
+    console.log('Password:', password);
+    // Missatge d'inscripció
+    alert('Inscripció realitzada');
+    // Redirigeix a una altra pàgina si és necessari
+    // navigation.navigate('Algun altra pantalla');
+  };
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={styles.title}>Localitzacions Drift Japó</Text>
+    <ImageBackground source={backgroundImage} style={styles.background}>
+      <View style={styles.container}>
+        <View style={styles.signupBox}>
+          <Text style={styles.title}>Sign Up</Text>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Correu electrònic"
+            value={email}
+            onChangeText={text => setEmail(text)}
+            keyboardType="email-address"
+          />
 
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 35.6812, // Coordenades inicials (Exemple: Tòquio)
-          longitude: 139.7671,
-          latitudeDelta: 5, // Ampliem el delta per mostrar més àrea
-          longitudeDelta: 5,
-        }}
-      >
-        {/* Mostra els marcadors per a cada localització de drift */}
-        {locations.map(location => (
-          <Marker
-            key={location.id}
-            coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-            title={location.title}
-          >
-            <Callout>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle}>{location.title}</Text>
-                <Text>{location.description}</Text>
-              </View>
-            </Callout>
-          </Marker>
-        ))}
-      </MapView>
+          <TextInput
+            style={styles.input}
+            placeholder="Contrasenya"
+            value={password}
+            onChangeText={text => setPassword(text)}
+            secureTextEntry // Amaga la contrasenya
+          />
 
-      {/* Botó per tornar enrere */}
-      <Button
-        title="Torna enrere"
-        onPress={() => navigation.goBack()}
-      />
-    </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Repetir contrasenya"
+            value={confirmPassword}
+            onChangeText={text => setConfirmPassword(text)}
+            secureTextEntry // Amaga la contrasenya
+          />
+
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Sign Up"
+              onPress={handleSignUp}
+              color="black" // Color del text del botó
+            />
+            <Button
+              title="Torna enrere"
+              onPress={() => navigation.goBack()}
+              color="black" // Color del text del botó
+            />
+          </View>
+        </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 // Estils per al component
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
   title: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginBottom: 20,
+    color: '#000', // Color del text del títol ajustat a negre
+    textAlign: 'center', // Centra el títol
   },
-  map: {
+  signupBox: {
+    backgroundColor: '#fff', // Color de fons del recuadre
+    borderRadius: 10, // Arrodoniment de les cantonades
+    padding: 40, // Espai interior
+    width: '90%', // Amplada del recuadre ajustada
+    elevation: 5, // Ombra per a Android
+    shadowColor: '#000', // Ombra per a iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  input: {
     width: '100%',
-    height: '70%', 
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
-  callout: {
-    width: 150, // Amplada del callout
-  },
-  calloutTitle: {
-    fontWeight: 'bold',
+  buttonContainer: {
+    marginTop: 20, // Espai entre els inputs i els botons
+    width: '100%', // Amplada dels botons ajustada
+    alignItems: 'center', // Centra els botons horitzontalment
   },
 });
