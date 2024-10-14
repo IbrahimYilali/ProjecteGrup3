@@ -1,48 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, ImageBackground, Text, Image } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen'; // Exemple d'una pantalla
+import DetailsScreen from './screens/DetailsScreen'; // Exemple d'una altra pantalla
+import Page1 from './screens/Page1';
+import Page2 from './screens/Page2';
 
-const App = () => {
-  return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('./assets/images/Foto-Fondo.png')} // Tu imagen de fondo
-        style={styles.background}
-      >
-        <View style={styles.overlay}>
-          <Image source={require('./assets/images/logo.png')} style={styles.icon} />
-          <Text style={styles.text}>Info Gap</Text>
-        </View>
-      </ImageBackground>
-    </View>
-  );
-};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    resizeMode: 'cover', // Esto asegura que la imagen cubra todo el fondo
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlay: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    top: '45%', // Ajusta la posición según sea necesario
-  },
-  icon: {
-    width: 80, // Ajusta el tamaño del icono
-    height: 80,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#511C30', // Color similar al del texto de la imagen
-    marginTop: 10,
-  },
-});
+const Stack = createNativeStackNavigator();
 
-export default App;
+
+export default function App() {
+ return (
+   <NavigationContainer>
+     <Stack.Navigator initialRouteName="Home">
+       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
+       <Stack.Screen name="Details" component={DetailsScreen} options={{ headerShown: false }}/>
+       <Stack.Screen name="Page1" component={Page1} options={{ headerShown: false }}/>
+       <Stack.Screen name="Page2" component={Page2} options={{ headerShown: false }}/>
+     </Stack.Navigator>
+   </NavigationContainer>
+ );
+}
