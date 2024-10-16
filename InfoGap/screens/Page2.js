@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 
-// Importa la imatge de fons
 const backgroundImage = require('../assets/images/fondo.png');
 
 export default function Page2({ navigation }) {
@@ -10,96 +9,133 @@ export default function Page2({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignUp = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    alert('Registre realitzat');
+    if (password === confirmPassword) {
+      navigation.navigate('All');
+    } else {
+      alert('Passwords do not match');
+    }
   };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
-      <View style={styles.container}>
-        <View style={styles.signUpBox}>
-          <Text style={styles.title}>Sign Up</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Correu electrònic"
-            value={email}
-            onChangeText={text => setEmail(text)}
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contrasenya"
-            value={password}
-            onChangeText={text => setPassword(text)}
-            secureTextEntry
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirma la contrasenya"
-            value={confirmPassword}
-            onChangeText={text => setConfirmPassword(text)}
-            secureTextEntry
-          />
-          <View style={styles.buttonContainer}>
-            <Button title="Sign Up" onPress={handleSignUp} color="#ffffff" />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Torna enrere" onPress={() => navigation.goBack()} color="#ffffff" />
-          </View>
+      
+      <View style={styles.loginBox}>
+
+        <View style={styles.topButtons}>
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => navigation.navigate('Page1')}
+          >
+            <Text style={styles.switchButtonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.switchButton, { backgroundColor: '#333' }]}
+            onPress={() => navigation.navigate('Page2')}
+          >
+            <Text style={styles.switchButtonText}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
+        
+
+        <Text style={styles.title}>Welcome to Info Gap!</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="User..."
+          value={email}
+          onChangeText={text => setEmail(text)}
+          keyboardType="email-address"
+          placeholderTextColor="#aaa"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password..."
+          value={password}
+          onChangeText={text => setPassword(text)}
+          secureTextEntry
+          placeholderTextColor="#aaa"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Repeat Password..."
+          value={confirmPassword}
+          onChangeText={text => setConfirmPassword(text)}
+          secureTextEntry
+          placeholderTextColor="#aaa"
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
 }
 
-// Estils per al component
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  topButtons: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 40,
+    justifyContent: 'space-around',
+    width: '80%',
+  },
+  switchButton: {
+    backgroundColor: '#aaa',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 10,
+  },
+  switchButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  loginBox: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 30,
+    width: '90%',
     alignItems: 'center',
-    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   title: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#333',
     textAlign: 'center',
   },
-  signUpBox: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 40,
-    width: '90%', // Ampliar el recuadre
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    alignItems: 'center',
-  },
   input: {
     width: '100%',
     height: 50,
-    borderColor: 'gray',
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     marginBottom: 20,
   },
-  buttonContainer: {
-    width: '100%',
+  button: {
+    backgroundColor: '#333',
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: 'black', // Color de fons negre per als botons
-    marginBottom: 10, // Espai entre botons
+    marginTop: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
