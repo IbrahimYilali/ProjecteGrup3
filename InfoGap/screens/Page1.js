@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import FSection from '../components/FSection'; 
 
 const backgroundImage = require('../assets/images/fondo.png');
 
@@ -8,9 +9,17 @@ export default function Page1({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Aquí se puede agregar la lógica de autenticación
-    alert(`Login successful for email: ${email}`);
+    navigation.navigate('All');
   };
+
+  const handlePress = (id) => {
+    console.log("Han clicat al botó " + id);
+    if (id == 1){
+      navigation.navigate("HomeScreen");
+    }else if (id == 3){
+      navigation.navigate("Page2");
+    }
+  }
 
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
@@ -59,6 +68,7 @@ export default function Page1({ navigation }) {
         <TouchableOpacity>
           <Text style={styles.forgotPassword}>Forgot your password?</Text>
         </TouchableOpacity>
+        <FSection currentSection={2} onPress= {handlePress}/>
       </View>
     </ImageBackground>
   );

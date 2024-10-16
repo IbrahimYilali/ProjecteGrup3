@@ -1,7 +1,20 @@
 import React from 'react';
 import { View, Image, Button, ImageBackground, StyleSheet } from 'react-native';
+import FSection from '../components/FSection';
 
 export default function HomeScreen({ navigation }) {
+
+  const handlePress = (id) => {
+    console.log("Han clicat al botó " + id);
+    if (id == 2){
+      navigation.navigate("Page1");
+    }else if (id == 3){
+      navigation.navigate("Page2");
+    }
+      
+
+  };
+
   return (
     <ImageBackground
       source={require('../assets/images/fondo.png')} // Assegura't que la ruta és correcta
@@ -31,6 +44,7 @@ export default function HomeScreen({ navigation }) {
             color="white" // Color del text del botó
             onPress={() => navigation.navigate('Page2')}
           />
+          <FSection currentSection={1} onPress= {handlePress}/>
         </View>
       </View>
     </ImageBackground>

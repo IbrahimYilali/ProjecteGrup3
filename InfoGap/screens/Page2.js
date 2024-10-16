@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import FSection from '../components/FSection'; 
 
 const backgroundImage = require('../assets/images/fondo.png');
 
@@ -15,6 +16,10 @@ export default function Page2({ navigation }) {
       alert('Passwords do not match');
     }
   };
+
+  const handlePress = (id) => {
+    console.log("Han clickat el botó.");
+  }
 
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
@@ -69,6 +74,7 @@ export default function Page2({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+        <FSection currentSection={3} onPress= {handlePress}/>
       </View>
     </ImageBackground>
   );
