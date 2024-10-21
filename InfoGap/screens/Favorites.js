@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
 
-export default function Account({ navigation }) {
+export default function Favorites({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Aquí puedes añadir otros componentes, si deseas mostrar contenido adicional */}
