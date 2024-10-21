@@ -12,7 +12,6 @@ export default function HomeScreen({ navigation }) {
       navigation.navigate("Page2");
     }
       
-
   };
 
   return (

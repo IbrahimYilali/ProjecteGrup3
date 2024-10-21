@@ -28,17 +28,21 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'flex-end', // Manté el contingut a la part inferior
     },
     iconContainer: {
         alignItems: 'center',
+        justifyContent: 'flex-end',
+        flex: 1,
+        paddingBottom: 20, // Ajusta aquest valor per pujar els ícons
     },
     circular: {
-        backgroundColor: '#FFF', // Fondo blanco para el botón circular
-        borderRadius: 50, // Hacemos el botón circular
-        padding: 10, // Espaciado interno
+        backgroundColor: '#FFF',
+        borderRadius: 50,
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 5, // Sombra para darle profundidad
+        elevation: 5,
     },
     icon: {
         margin: 5,
@@ -50,3 +54,4 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
 });
+

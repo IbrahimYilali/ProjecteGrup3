@@ -2,7 +2,8 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
 
-export default function All({ navigation }) {
+export default function Add({ navigation }) {
+    
   return (
     <View style={styles.container}>
       {/* Aquí puedes añadir otros componentes, si deseas mostrar contenido adicional */}
@@ -14,7 +15,7 @@ export default function All({ navigation }) {
 
       {/* Barra de navegación inferior */}
       <FSection 
-        currentSection={1} 
+        currentSection={3} 
         onPress={(id) => {
           if (id === 1) navigation.navigate("Home"); 
           else if (id === 2) navigation.navigate("Map");
