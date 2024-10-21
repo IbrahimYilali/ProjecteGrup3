@@ -20,6 +20,7 @@ export default function Add({ navigation }) {
           if (id === 1) navigation.navigate("Home"); 
           else if (id === 2) navigation.navigate("Map");
           else if (id === 3) navigation.navigate("Add"); 
+          else if (id === 4) navigation.navigate("Favorite"); 
           else if (id === 5) navigation.navigate("Account"); 
         }} 
       />
