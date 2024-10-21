@@ -3,39 +3,50 @@ import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
 
 export default function Account({ navigation }) {
+    
   return (
     <View style={styles.container}>
-      {/* Aquí puedes añadir otros componentes, si deseas mostrar contenido adicional */}
-
-      {/* Contenido principal */}
+      {/* Contingut principal */}
       <View style={styles.content}>
-        {/* Puedes agregar otros elementos aquí */}
+        {/* Pots afegir altres elements aquí */}
       </View>
 
-      {/* Barra de navegación inferior */}
-      <FSection 
-        currentSection={5} 
-        onPress={(id) => {
-          if (id === 1) navigation.navigate("Home"); 
-          else if (id === 2) navigation.navigate("Map");
-          else if (id === 3) navigation.navigate("Add"); 
-          else if (id === 4) navigation.navigate("Favorites"); 
-          else if (id === 5) navigation.navigate("Account"); 
-        }} 
-      />
+      {/* Barra de navegació inferior */}
+      <View style={styles.bottomBar}>
+        <FSection 
+          currentSection={5} 
+          onPress={(id) => {
+            if (id === 1) navigation.navigate("Home"); 
+            else if (id === 2) navigation.navigate("Map");
+            else if (id === 3) navigation.navigate("Favorites"); 
+            else if (id === 4) navigation.navigate("Add"); 
+            else if (id === 5) navigation.navigate("Account"); 
+          }} 
+        />
+      </View>
     </View>
   );
 }
 
-// Estilos
+// Estils
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E8E8E8', // Color de fondo de la pantalla
+    backgroundColor: '#FFF', // Fons blanc
   },
   content: {
-    flex: 1, // Ocupa el espacio restante
-    justifyContent: 'center', // Centra el contenido
-    alignItems: 'center', // Centra horizontalmente
+    flex: 1, // Ocupa l'espai restant
+    justifyContent: 'center', // Centra el contingut verticalment
+    alignItems: 'center', // Centra el contingut horitzontalment
+  },
+  bottomBar: {
+    position: 'absolute', // Posiciona absolutament la barra inferior
+    bottom: 0, // Ancorar a la part inferior
+    left: 0,
+    right: 0,
+    height: 60, // Alçada de la barra inferior
+    backgroundColor: '#FFF', // Fons blanc per la barra inferior
+    borderTopWidth: 1, // Línia superior de la barra
+    borderTopColor: '#ccc', // Color de la línia
   },
 });
