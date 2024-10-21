@@ -8,7 +8,7 @@ import DetailsScreen from './screens/DetailsScreen'; // Pantalla de detalls
 import All from './screens/All'; // Pantalla 1
 import Map from './screens/Map';
 import Add from './screens/Add';
-import Account from './screens/Account';
+import Favorites from './screens/Favorites';
 
 const Stack = createNativeStackNavigator();
 
