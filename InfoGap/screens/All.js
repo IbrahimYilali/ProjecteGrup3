@@ -1,14 +1,20 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
+import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
 
 export default function All({ navigation }) {
-    
   return (
     <View style={styles.container}>
-      {/* Contingut principal */}
-      <View style={styles.content}>
-        {/* Pots afegir altres elements aquí */}
+      
+      {/* Barra de navegació superior */}
+      <View style={styles.topBar}>
+        <FSuperior 
+          onPress={(id) => {
+            if (id === 1) navigation.goBack(); 
+            else if (id === 2) navigation.navigate("Home");
+          }} 
+        />
       </View>
 
       {/* Barra de navegació inferior */}
@@ -34,10 +40,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF', // Fons blanc
   },
-  content: {
-    flex: 1, // Ocupa l'espai restant
-    justifyContent: 'center', // Centra el contingut verticalment
-    alignItems: 'center', // Centra el contingut horitzontalment
+  topBar: {
+    height: 80, // Alçada de la barra superior
+    backgroundColor: '#FFF', // Fons blanc
+    borderBottomWidth: 1, // Línia inferior de la barra
+    borderBottomColor: '#ccc', // Color de la línia
+    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
+    paddingBottom: 0, // Espai inferior per a millor visualització
   },
   bottomBar: {
     position: 'absolute', // Posiciona absolutament la barra inferior
