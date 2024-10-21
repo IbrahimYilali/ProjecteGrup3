@@ -23,6 +23,7 @@ export default function App() {
         <Stack.Screen name="All" component={All} />
         <Stack.Screen name="Map" component={Map} />
         <Stack.Screen name="Add" component={Add} />
+        <Stack.Screen name="Favorites" component={Favorites} />
         <Stack.Screen name="Account" component={Account} />
       </Stack.Navigator>
     </NavigationContainer>
