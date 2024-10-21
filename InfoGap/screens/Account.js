@@ -19,6 +19,7 @@ export default function Account({ navigation }) {
           if (id === 1) navigation.navigate("Home"); 
           else if (id === 2) navigation.navigate("Map");
           else if (id === 3) navigation.navigate("Add"); 
+          else if (id === 4) navigation.navigate("Favorites"); 
           else if (id === 5) navigation.navigate("Account"); 
         }} 
       />

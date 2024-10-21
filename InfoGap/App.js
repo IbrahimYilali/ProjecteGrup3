@@ -8,6 +8,7 @@ import DetailsScreen from './screens/DetailsScreen'; // Pantalla de detalls
 import All from './screens/All'; // Pantalla 1
 import Map from './screens/Map';
 import Add from './screens/Add';
+import Favorites from './screens/Favorites';
 import Account from './screens/Account';
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,7 @@ export default function App() {
         <Stack.Screen name="All" component={All} />
         <Stack.Screen name="Map" component={Map} />
         <Stack.Screen name="Add" component={Add} />
+        <Stack.Screen name="Favorites" component={Favorites} />
         <Stack.Screen name="Account" component={Account} />
       </Stack.Navigator>
     </NavigationContainer>
