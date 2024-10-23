@@ -1,23 +1,23 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Assegura't que tens instal·lat 'expo-vector-icons'
+import defaultImage from '../assets/images/default_image.jpg'; // Importa la imatge per defecte
 
 const QuestionCell = ({ title, geolocations, imageUrl }) => {
   
   // Funció per gestionar el clic del botó
   const handlePress = () => {
-    Alert.alert('Clicat', 'Aixo et porta a la fitxa pertinent.');
+    Alert.alert('Clicat', 'Això et porta a la fitxa pertinent.');
   };
+
+  // Si la URL de la imatge no és vàlida, utilitza la imatge per defecte
+  const imageSource = imageUrl ? { uri: imageUrl } : defaultImage;
 
   return (
     <View style={styles.questionCell}>
       {/* Imatge a l'esquerra ocupant el 35% */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={{ uri: imageUrl }} 
-          style={styles.image} 
-          resizeMode="cover" 
-        />
+        <Image source={imageSource} style={styles.image} resizeMode="cover"/>
       </View>
 
       {/* Títol i coordenades a la dreta ocupant el 60% */}
@@ -29,7 +29,7 @@ const QuestionCell = ({ title, geolocations, imageUrl }) => {
 
       {/* Botó amb fletxa a la dreta ocupant el 5% */}
       <TouchableOpacity onPress={handlePress} style={styles.button}>
-        <Ionicons name="arrow-forward" size={24} color="black" style={styles.icon} />
+        <Ionicons name="arrow-forward" size={24} color="blue" style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
