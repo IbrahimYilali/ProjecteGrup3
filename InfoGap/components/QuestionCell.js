@@ -1,35 +1,32 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Assegura't que tens instal·lat 'expo-vector-icons'
-import defaultImage from '../assets/images/default_image.jpg'; // Importa la imatge per defecte
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Asegúrate de tener instalado react-native-vector-icons
 
-const QuestionCell = ({ title, geolocations, imageUrl }) => {
+const QuestionCell = ({ imageUrl, title, latitude, longitude, onPress }) => {
   
-  // Funció per gestionar el clic del botó
-  const handlePress = () => {
-    Alert.alert('Clicat', 'Això et porta a la fitxa pertinent.');
-  };
-
-  // Si la URL de la imatge no és vàlida, utilitza la imatge per defecte
-  const imageSource = imageUrl ? { uri: imageUrl } : defaultImage;
+  // Si no hay imageUrl, usar imagen por defecto
+  const imageSource = imageUrl
+    ? { uri: imageUrl }
+    : require('../assets/images/default_image.jpg'); // Ruta a tu imagen por defecto
 
   return (
     <View style={styles.questionCell}>
-      {/* Imatge a l'esquerra ocupant el 35% */}
+      {/* Imagen ocupa el 35% del ancho */}
       <View style={styles.imageContainer}>
-        <Image source={imageSource} style={styles.image} resizeMode="cover"/>
+        <Image source={imageSource} style={styles.image} />
       </View>
 
-      {/* Títol i coordenades a la dreta ocupant el 60% */}
+      {/* Contenedor de texto para el título y coordenadas ocupa el 60% */}
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.coordinates}>Latitud: {geolocations.lat}</Text>
-        <Text style={styles.coordinates}>Longitud: {geolocations.lon}</Text>
+        <Text style={styles.coordinates}>
+          Lat: {latitude !== null ? latitude : 'N/A'}, Lon: {longitude !== null ? longitude : 'N/A'}
+        </Text>
       </View>
 
-      {/* Botó amb fletxa a la dreta ocupant el 5% */}
-      <TouchableOpacity onPress={handlePress} style={styles.button}>
-        <Ionicons name="arrow-forward" size={24} color="blue" style={styles.icon} />
+      {/* Botón ocupa el 5% del ancho con icono de ir a detalles */}
+      <TouchableOpacity style={styles.button} onPress={onPress}>
+        <Icon name="chevron-forward" size={24} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -37,50 +34,47 @@ const QuestionCell = ({ title, geolocations, imageUrl }) => {
 
 const styles = StyleSheet.create({
   questionCell: {
-    flexDirection: 'row', // Elements en fila
+    flexDirection: 'row', // Elementos en fila
     padding: 20,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
     marginBottom: 20,
     alignItems: 'center',
-    // Ombra per a iOS
+    // Sombra para iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    // Ombra per a Android
+    // Sombra para Android
     elevation: 5,
   },
   imageContainer: {
-    width: '35%', // Imatge ocupa el 35% de l'amplada
-    marginRight: 10,
+    width: '35%', // Imagen ocupa el 35% del ancho
+    marginRight: 10, // Espacio entre la imagen y el texto
   },
   image: {
     width: '100%',
     height: 100,
     borderRadius: 10,
-    backgroundColor: '#ccc', // Fons gris clar mentre es carrega la imatge
+    backgroundColor: '#ccc', // Fondo gris claro mientras se carga la imagen
   },
   textContainer: {
-    width: '60%', // Text ocupa el 60% de l'amplada
+    width: '60%', // Texto ocupa el 60% del ancho
     justifyContent: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   coordinates: {
     fontSize: 16,
-    marginBottom: 5,
+    color: '#666', // Color gris para las coordenadas
   },
   button: {
-    width: '5%', // Ocupa el 5% de l'espai
+    width: '5%', // Ocupa el 5% del espacio
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  icon: {
-    marginLeft: -5, // Mou la icona cap a l'esquerra
   },
 });
 
