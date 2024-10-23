@@ -17,15 +17,15 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Page1" component={Page1} options={{ headerShown: false }} />
-        <Stack.Screen name="Page2" component={Page2} options={{ headerShown: false }} />
-        <Stack.Screen name="Details" component={DetailsScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="All" component={All} options={{ headerShown: false }}/>
-        <Stack.Screen name="Map" component={Map} options={{ headerShown: false }}/>
-        <Stack.Screen name="Add" component={Add} options={{ headerShown: false }}/>
-        <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
-        <Stack.Screen name="Account" component={Account} options={{ headerShown: false }}/>
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false , animation: 'none'}} />
+        <Stack.Screen name="Page1" component={Page1} options={{ headerShown: false , animation: 'none'}} />
+        <Stack.Screen name="Page2" component={Page2} options={{ headerShown: false , animation: 'none'}} />
+        <Stack.Screen name="Details" component={DetailsScreen} options={{ headerShown: false , animation: 'none'}} />
+        <Stack.Screen name="All" component={All} options={{ headerShown: false , animation: 'none'}}/>
+        <Stack.Screen name="Map" component={Map} options={{ headerShown: false , animation: 'none'}}/>
+        <Stack.Screen name="Add" component={Add} options={{ headerShown: false , animation: 'none'}}/>
+        <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false , animation: 'none'}}/>
+        <Stack.Screen name="Account" component={Account} options={{ headerShown: false , animation: 'none'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
