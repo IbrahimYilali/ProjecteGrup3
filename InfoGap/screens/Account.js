@@ -1,22 +1,18 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
 
 export default function Account({ navigation }) {
   return (
     <View style={styles.container}>
-      
-      {/* Barra de navegació superior */}
-      <View style={styles.topBar}>
-        <FSuperior 
-          onPress={(id) => {
-            if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
-          }} 
-        />
+      {/* Aquí puedes añadir otros componentes, si deseas mostrar contenido adicional */}
+
+      {/* Contenido principal */}
+      <View style={styles.content}>
+        {/* Puedes agregar otros elementos aquí */}
       </View>
 
+<<<<<<< Updated upstream
       {/* Barra de navegació inferior */}
       <View style={styles.bottomBar}>
         <FSection 
@@ -30,32 +26,32 @@ export default function Account({ navigation }) {
           }} 
         />
       </View>
+=======
+      {/* Barra de navegación inferior */}
+      <FSection 
+        currentSection={5} 
+        onPress={(id) => {
+          if (id === 1) navigation.navigate("Home"); 
+          else if (id === 2) navigation.navigate("Map");
+          else if (id === 3) navigation.navigate("Add"); 
+          else if (id === 4) navigation.navigate("Favorite"); 
+          else if (id === 5) navigation.navigate("Account"); 
+        }} 
+      />
+>>>>>>> Stashed changes
     </View>
   );
 }
 
-// Estils
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', // Fons blanc
+    backgroundColor: '#E8E8E8', // Color de fondo de la pantalla
   },
-  topBar: {
-    height: 80, // Alçada de la barra superior
-    backgroundColor: '#FFF', // Fons blanc
-    borderBottomWidth: 1, // Línia inferior de la barra
-    borderBottomColor: '#ccc', // Color de la línia
-    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
-    paddingBottom: 0, // Espai inferior per a millor visualització
-  },
-  bottomBar: {
-    position: 'absolute', // Posiciona absolutament la barra inferior
-    bottom: 0, // Ancorar a la part inferior
-    left: 0,
-    right: 0,
-    height: 60, // Alçada de la barra inferior
-    backgroundColor: '#FFF', // Fons blanc per la barra inferior
-    borderTopWidth: 1, // Línia superior de la barra
-    borderTopColor: '#ccc', // Color de la línia
+  content: {
+    flex: 1, // Ocupa el espacio restante
+    justifyContent: 'center', // Centra el contenido
+    alignItems: 'center', // Centra horizontalmente
   },
 });
