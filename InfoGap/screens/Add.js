@@ -4,7 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import db from '../Firebase/FirebaseConfig'; 
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
-import QuestionCell from '../components/QuestionCell'; 
+import InfoCard from '../components/InfoCard';
 
 export default function Add({ navigation }) {
   const [data, setData] = useState([]); 
@@ -13,23 +13,19 @@ export default function Add({ navigation }) {
     try {
       const querySnapshot = await getDocs(collection(db, 'Preguntes'));
       const dataFromFirestore = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
+        id: doc.id,
+        ...doc.data(),
       }));
-      console.log(dataFromFirestore); // Agregat per depuració
+      console.log(dataFromFirestore); // For debugging
       setData(dataFromFirestore); 
     } catch (error) {
-      console.error("Error al obtener los datos: ", error);
+      console.error("Error fetching data: ", error);
     }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  const handlePress = (title) => {
-    Alert.alert('Clicat', 'Has clicat a: ' + title);
-  };
 
   return (
     <View style={styles.container}>
@@ -44,18 +40,29 @@ export default function Add({ navigation }) {
 
       {data.length === 0 ? (
         <View style={styles.noDataContainer}>
-          <Text>No hi ha dades disponibles.</Text>
+          <Text>Loading...</Text>
         </View>
       ) : (
         <FlatList
+          contentContainerStyle={styles.listContainer} // Add this to ensure scrollability and spacing
           data={data}
           renderItem={({ item }) => (
-            <QuestionCell 
+            <InfoCard 
               title={item.Title} 
-              longitude={item.Geolocation ? item.Geolocation.longitude : null} // Canviat a Geolocation
-              latitude={item.Geolocation ? item.Geolocation.latitude : null} // Canviat a Geolocation
-              imageUrl={item.Image_URL} // Canviat a Image_URL
-              onPress={() => handlePress(item.Title)} // Passant el títol
+              description={item.Description}
+              date={item.Date || "01/07/2022"} 
+              location={item.Location || "Barcelona-Catalonia"} 
+              likes={item.Likes || 14} 
+              imageUrl={item.Image_URL || './assets/images/default.jpg'}
+              onLikePress={() => Alert.alert("Liked", "You liked: " + item.Title)}
+              onPress={() => 
+                navigation.navigate("Information", {
+                  title: item.Title,
+                  description: item.Description,
+                  location: item.Location || "Barcelona-Catalonia",
+                  imageUrl: item.Image_URL || './assets/images/default.jpg',
+                })
+              }
             />
           )}
           keyExtractor={item => item.id}
@@ -89,6 +96,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, 
     borderBottomColor: '#ccc', 
     justifyContent: 'flex-end',
+  },
+  listContainer: {
+    paddingBottom: 20, // Add bottom padding for scrollability
+    paddingTop: 10, // Add top padding for separation
   },
   noDataContainer: {
     flex: 1,
