@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
+<<<<<<< Updated upstream
 const InfoCard = ({ title, description, date, location, likes, imageUrl, onLikePress, onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -14,6 +15,25 @@ const InfoCard = ({ title, description, date, location, likes, imageUrl, onLikeP
         </TouchableOpacity>
         <Text style={styles.date}>{date}</Text>
         <Text style={styles.location}>{location}</Text>
+=======
+const InfoCard = ({ title, description, date, location, likes, imageUrl, onLikePress, onPress, onLocationPress }) => {
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={onPress}>
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+      </TouchableOpacity>
+      <View style={styles.infoContainer}>
+        <TouchableOpacity onPress={onPress}>
+          <Text style={styles.title}>{title}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
+          <Text style={styles.description}>{description}</Text>
+        </TouchableOpacity>
+        <Text style={styles.date}>{date}</Text>
+        <TouchableOpacity onPress={onLocationPress}>
+          <Text style={styles.location}>{location}</Text>
+        </TouchableOpacity>
+>>>>>>> Stashed changes
         <TouchableOpacity onPress={onLikePress}>
           <Text style={styles.likeText}>❤️ {likes} Likes</Text>
         </TouchableOpacity>
@@ -59,7 +79,11 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 12,
+<<<<<<< Updated upstream
     color: 'gray',
+=======
+    color: 'blue', // Optional: make the location text look clickable
+>>>>>>> Stashed changes
   },
   likeText: {
     fontSize: 14,

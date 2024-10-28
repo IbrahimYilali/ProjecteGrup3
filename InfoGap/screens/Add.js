@@ -63,6 +63,14 @@ export default function Add({ navigation }) {
                   imageUrl: item.Image_URL || './assets/images/default.jpg',
                 })
               }
+<<<<<<< Updated upstream
+=======
+              onLocationPress={() => 
+                navigation.navigate("LocationScreen", {
+                  location: item.Location || "Barcelona-Catalonia",
+                })
+              }
+>>>>>>> Stashed changes
             />
           )}
           keyExtractor={item => item.id}
