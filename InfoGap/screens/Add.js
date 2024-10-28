@@ -37,7 +37,7 @@ export default function Add({ navigation }) {
         <FSuperior 
           onPress={(id) => {
             if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
+            else if (id === 2) navigation.navigate("Search");
           }} 
         />
       </View>
@@ -49,6 +49,7 @@ export default function Add({ navigation }) {
       ) : (
         <FlatList
           data={data}
+          style={styles.flatList} // Estilo agregado para el FlatList
           renderItem={({ item }) => (
             <InfoCard 
               title={item.Title} 
@@ -97,6 +98,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatList: {
+    marginTop: 10, // Espacio entre la barra superior y la lista
   },
   bottomBar: {
     position: 'absolute', 

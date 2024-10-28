@@ -10,6 +10,7 @@ import Map from './screens/Map';
 import Add from './screens/Add';
 import Favorites from './screens/Favorites';
 import Account from './screens/Account';
+import Search from './screens/Search';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name="Add" component={Add} options={{ headerShown: false , animation: 'none'}}/>
         <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false , animation: 'none'}}/>
         <Stack.Screen name="Account" component={Account} options={{ headerShown: false , animation: 'none'}}/>
+        <Stack.Screen name="Search" component={Search} options={{ headerShown: false , animation: 'none'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -13,8 +13,8 @@ const InfoCard = ({
   onLocationPress,
 }) => {
   const imageSource = imageUrl
-    ? { uri: imageUrl }
-    : require('../assets/images/default_image.jpg');
+  ? { uri: imageUrl }
+  : require('../assets/images/default_image.jpg');
 
   return (
     <View style={styles.cardContainer}>
@@ -48,7 +48,7 @@ const InfoCard = ({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    padding: 15,
+    padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
     marginBottom: 20,
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3.8,
     elevation: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 15,
   },
   rowContainer: {
     flexDirection: 'row', // Coloca la imagen y el texto en fila
