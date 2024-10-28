@@ -1,23 +1,41 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps'; // Asegúrate de importar el componente de mapa
 import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
+import FSuperior from '../components/FSuperior'; // Asegúrate de que FSuperior esté importado correctamente
 
 export default function Map({ navigation }) {
   return (
     <View style={styles.container}>
       
-      {/* Barra de navegació superior */}
+      {/* Barra de navegación superior */}
       <View style={styles.topBar}>
         <FSuperior 
           onPress={(id) => {
             if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
+            else if (id === 2) navigation.navigate("Search");
           }} 
         />
       </View>
 
-      {/* Barra de navegació inferior */}
+      {/* Mapa de Apple */}
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 41.3851, // Latitud de Barcelona
+          longitude: 2.1734, // Longitud de Barcelona
+          latitudeDelta: 0.0922, // Rango de visualización
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <Marker 
+          coordinate={{ latitude: 41.3851, longitude: 2.1734 }} // Coordenadas del marcador
+          title="Barcelona"
+          description="Ciudad de Barcelona"
+        />
+      </MapView>
+
+      {/* Barra de navegación inferior */}
       <View style={styles.bottomBar}>
         <FSection 
           currentSection={2} 
@@ -34,28 +52,32 @@ export default function Map({ navigation }) {
   );
 }
 
-// Estils
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', // Fons blanc
+    backgroundColor: '#FFF', // Fondo blanco
   },
   topBar: {
-    height: 80, // Alçada de la barra superior
-    backgroundColor: '#FFF', // Fons blanc
-    borderBottomWidth: 1, // Línia inferior de la barra
-    borderBottomColor: '#ccc', // Color de la línia
-    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
-    paddingBottom: 0, // Espai inferior per a millor visualització
+    height: 80, // Altura de la barra superior
+    backgroundColor: '#FFF', // Fondo blanco
+    borderBottomWidth: 1, // Línea inferior de la barra
+    borderBottomColor: '#ccc', // Color de la línea
+    justifyContent: 'flex-end', // Alinea el contenido a la parte inferior
+    paddingBottom: 0, // Espacio inferior para mejor visualización
+  },
+  map: {
+    flex: 1, // Asegúrate de que el mapa ocupe el espacio disponible
+    marginBottom: 60, // Para que no se superponga con la barra inferior
   },
   bottomBar: {
-    position: 'absolute', // Posiciona absolutament la barra inferior
-    bottom: 0, // Ancorar a la part inferior
+    position: 'absolute', // Posiciona absolutamente la barra inferior
+    bottom: 0, // Ancla a la parte inferior
     left: 0,
     right: 0,
-    height: 60, // Alçada de la barra inferior
-    backgroundColor: '#FFF', // Fons blanc per la barra inferior
-    borderTopWidth: 1, // Línia superior de la barra
-    borderTopColor: '#ccc', // Color de la línia
+    height: 60, // Altura de la barra inferior
+    backgroundColor: '#FFF', // Fondo blanco para la barra inferior
+    borderTopWidth: 1, // Línea superior de la barra
+    borderTopColor: '#ccc', // Color de la línea
   },
 });
