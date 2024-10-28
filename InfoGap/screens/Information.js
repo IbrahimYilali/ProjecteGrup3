@@ -13,12 +13,7 @@ const Information = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <Ionicons 
-          name="arrow-back" 
-          size={24} 
-          color="black" 
-          onPress={() => navigation.goBack()} // Navigate back when the icon is pressed
-        />
+        
         <Text style={styles.title}>{title}</Text>
       </View>
 
@@ -31,7 +26,7 @@ const Information = ({ route, navigation }) => {
         <View style={styles.likesContainer}>
           <TouchableOpacity onPress={handleLikePress} style={styles.likeButton}>
             <Ionicons name="heart" size={24} color="red" />
-            <Text style={styles.likeText}>{likes} Likes</Text> {/* Use 'likes' state instead of 'item.Likes' */}
+            <Text style={styles.likeText}>{likes} </Text> {/* Use 'likes' state instead of 'item.Likes' */}
           </TouchableOpacity>
         </View>
 

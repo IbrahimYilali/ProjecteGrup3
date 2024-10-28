@@ -27,6 +27,12 @@ export default function Add({ navigation }) {
     fetchData();
   }, []);
 
+  const handleLikePress = (index) => {
+    const updatedData = [...data];
+    updatedData[index].Likes = (updatedData[index].Likes || 0) + 1; // Increment likes
+    setData(updatedData);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -46,13 +52,13 @@ export default function Add({ navigation }) {
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={data}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <InfoCard 
               title={item.Title} 
               description={item.Description}
               date={item.Date || "01/07/2022"} 
               location={item.Location || "Barcelona-Catalonia"} 
-              initialLikes={item.Likes || 14} // Pass initial likes
+              likes={item.Likes || 0} // Pass likes
               imageUrl={item.Image_URL || './assets/images/default_image.jpg'}
               onPress={() => 
                 navigation.navigate("Information", {
@@ -61,17 +67,20 @@ export default function Add({ navigation }) {
                   location: item.Location || "Barcelona-Catalonia",
                   imageUrl: item.Image_URL || './assets/images/default_image.jpg',
                   date: item.Date || "01/07/2022",
-                  initialLikes: item.Likes || 14,
+                  initialLikes: item.Likes || 0,
                 })
               }
               onLocationPress={() => 
-                navigation.navigate("LocationScreen", {
+                navigation.navigate("Map", {
                   location: item.Location || "Barcelona-Catalonia",
                 })
               }
+              onLikePress={() => handleLikePress(index)} // Handle likes
             />
           )}
           keyExtractor={item => item.id}
+          // Important to give enough padding at the bottom for the scroll
+          style={styles.flatList} 
         />
       )}
 
@@ -97,27 +106,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF', 
   },
   topBar: {
-    height: 80, 
+    height: 100,  // Height of the top bar
     backgroundColor: '#FFF', 
     borderBottomWidth: 1, 
     borderBottomColor: '#ccc', 
     justifyContent: 'flex-end',
+    paddingTop: 20, // Space on top of the top bar
   },
   listContainer: {
-    paddingBottom: 20, // Add bottom padding for scrollability
+    paddingBottom: 100, // Increase bottom padding to avoid obstruction from the bottom bar
     paddingTop: 10, // Add top padding for separation
+    paddingHorizontal: 16, // Add horizontal padding for better spacing
+    alignItems: 'center', // Center the cards
   },
   noDataContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  flatList: {
+    flexGrow: 1, // Ensure that the FlatList can grow
+  },
   bottomBar: {
     position: 'absolute', 
     bottom: 0, 
     left: 0,
     right: 0,
-    height: 60, 
+    height: 80,  // Height of the bottom bar
     backgroundColor: '#FFF', 
     borderTopWidth: 1, 
     borderTopColor: '#ccc', 
