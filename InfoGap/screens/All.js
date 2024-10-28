@@ -12,7 +12,7 @@ export default function All({ navigation }) {
         <FSuperior 
           onPress={(id) => {
             if (id === 1) navigation.goBack(); 
-            if (id === 2) navigation.navigate("Filters");
+            else if (id === 2) navigation.navigate("Home");
           }} 
         />
       </View>
