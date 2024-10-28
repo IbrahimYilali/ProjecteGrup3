@@ -4,7 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import db from '../Firebase/FirebaseConfig'; 
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
-import QuestionCell from '../components/QuestionCell'; 
+import InfoCard from '../components/InfoCard';
 
 export default function Add({ navigation }) {
   const [data, setData] = useState([]); 
@@ -16,7 +16,7 @@ export default function Add({ navigation }) {
           id: doc.id,
           ...doc.data(),
       }));
-      console.log(dataFromFirestore); // Agregat per depuració
+      console.log(dataFromFirestore); // Para depuración
       setData(dataFromFirestore); 
     } catch (error) {
       console.error("Error al obtener los datos: ", error);
@@ -50,12 +50,15 @@ export default function Add({ navigation }) {
         <FlatList
           data={data}
           renderItem={({ item }) => (
-            <QuestionCell 
+            <InfoCard 
               title={item.Title} 
-              longitude={item.Geolocation ? item.Geolocation.longitude : null} // Canviat a Geolocation
-              latitude={item.Geolocation ? item.Geolocation.latitude : null} // Canviat a Geolocation
-              imageUrl={item.Image_URL} // Canviat a Image_URL
-              onPress={() => handlePress(item.Title)} // Passant el títol
+              description={item.Description}
+              date="01/07/2022" // Puedes reemplazar con la fecha adecuada de la BD
+              location="Barcelona-Catalonia" // Puedes reemplazar con una ubicación real
+              likes={14} // Ejemplo, reemplazar con el valor de likes de tu BD si lo tienes
+              imageUrl={item.Image_URL || 'https://ruta-default.com/default.jpg'} // Reemplazo con una imagen por defecto si falta
+              onLikePress={() => Alert.alert("Liked", "Te gusta: " + item.Title)}
+              onLocationPress={() => Alert.alert("Ubicación", item.Title + " está aquí")}
             />
           )}
           keyExtractor={item => item.id}
