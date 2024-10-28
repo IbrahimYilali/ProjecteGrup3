@@ -1,69 +1,50 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+// InfoCard.js
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-<<<<<<< Updated upstream
-const InfoCard = ({ title, description, date, location, likes, imageUrl, onLikePress, onPress }) => {
+const InfoCard = ({ title, description, date, location, initialLikes, imageUrl, onPress }) => {
+  const [likes, setLikes] = useState(initialLikes); // State for likes
+
+  const handleLikePress = () => {
+    setLikes(likes + 1); // Increment likes
+  };
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={{ uri: imageUrl }} style={styles.image} />
-      <View style={styles.infoContainer}>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.title}>{title}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.description}>{description}</Text>
-        </TouchableOpacity>
-        <Text style={styles.date}>{date}</Text>
-        <Text style={styles.location}>{location}</Text>
-=======
-const InfoCard = ({ title, description, date, location, likes, imageUrl, onLikePress, onPress, onLocationPress }) => {
-  return (
-    <View style={styles.container}>
+    <View style={styles.card}>
       <TouchableOpacity onPress={onPress}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
-      </TouchableOpacity>
-      <View style={styles.infoContainer}>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.title}>{title}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPress}>
-          <Text style={styles.description}>{description}</Text>
-        </TouchableOpacity>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description}>{description}</Text>
         <Text style={styles.date}>{date}</Text>
-        <TouchableOpacity onPress={onLocationPress}>
-          <Text style={styles.location}>{location}</Text>
-        </TouchableOpacity>
->>>>>>> Stashed changes
-        <TouchableOpacity onPress={onLikePress}>
-          <Text style={styles.likeText}>❤️ {likes} Likes</Text>
+      </TouchableOpacity>
+      <View style={styles.likesContainer}>
+        <TouchableOpacity onPress={handleLikePress} style={styles.likeButton}>
+          <Ionicons name="heart" size={24} color="red" />
+          <Text style={styles.likeText}>{likes} Likes</Text>
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+      <View style={styles.locationContainer}>
+        <Ionicons name="location-outline" size={16} color="red" />
+        <Text style={styles.location}>{location}</Text>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 10,
+  card: {
+    backgroundColor: '#FFF',
     borderRadius: 8,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    padding: 16,
+    marginBottom: 10,
+    elevation: 1, // Add shadow
   },
   image: {
     width: '100%',
-    height: 200,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  infoContainer: {
-    padding: 10,
+    height: 120,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   title: {
     fontSize: 18,
@@ -71,22 +52,32 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    marginVertical: 5,
+    color: '#333',
   },
   date: {
     fontSize: 12,
     color: 'gray',
   },
-  location: {
-    fontSize: 12,
-<<<<<<< Updated upstream
-    color: 'gray',
-=======
-    color: 'blue', // Optional: make the location text look clickable
->>>>>>> Stashed changes
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  likeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   likeText: {
+    marginLeft: 8,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  location: {
     fontSize: 14,
+    color: 'gray',
+    marginLeft: 4,
   },
 });
 

@@ -44,7 +44,7 @@ export default function Add({ navigation }) {
         </View>
       ) : (
         <FlatList
-          contentContainerStyle={styles.listContainer} // Add this to ensure scrollability and spacing
+          contentContainerStyle={styles.listContainer}
           data={data}
           renderItem={({ item }) => (
             <InfoCard 
@@ -52,25 +52,23 @@ export default function Add({ navigation }) {
               description={item.Description}
               date={item.Date || "01/07/2022"} 
               location={item.Location || "Barcelona-Catalonia"} 
-              likes={item.Likes || 14} 
-              imageUrl={item.Image_URL || './assets/images/default.jpg'}
-              onLikePress={() => Alert.alert("Liked", "You liked: " + item.Title)}
+              initialLikes={item.Likes || 14} // Pass initial likes
+              imageUrl={item.Image_URL || './assets/images/default_image.jpg'}
               onPress={() => 
                 navigation.navigate("Information", {
                   title: item.Title,
                   description: item.Description,
                   location: item.Location || "Barcelona-Catalonia",
-                  imageUrl: item.Image_URL || './assets/images/default.jpg',
+                  imageUrl: item.Image_URL || './assets/images/default_image.jpg',
+                  date: item.Date || "01/07/2022",
+                  initialLikes: item.Likes || 14,
                 })
               }
-<<<<<<< Updated upstream
-=======
               onLocationPress={() => 
                 navigation.navigate("LocationScreen", {
                   location: item.Location || "Barcelona-Catalonia",
                 })
               }
->>>>>>> Stashed changes
             />
           )}
           keyExtractor={item => item.id}
