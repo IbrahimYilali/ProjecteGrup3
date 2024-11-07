@@ -1,38 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Alert, StyleSheet, Text } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore'; 
-import db from '../Firebase/FirebaseConfig'; 
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior';
-import InfoCard from '../components/InfoCard';
+import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
 
 export default function Add({ navigation }) {
-  const [data, setData] = useState([]); 
-
-  const fetchData = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'Preguntes'));
-      const dataFromFirestore = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-      }));
-      console.log(dataFromFirestore); // Para depuración
-      setData(dataFromFirestore); 
-    } catch (error) {
-      console.error("Error al obtener los datos: ", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handlePress = (title) => {
-    Alert.alert('Clicat', 'Has clicat a: ' + title);
-  };
-
   return (
     <View style={styles.container}>
+
       <View style={styles.topBar}>
         <FSuperior 
           onPress={(id) => {
@@ -42,30 +16,6 @@ export default function Add({ navigation }) {
         />
       </View>
 
-      {data.length === 0 ? (
-        <View style={styles.noDataContainer}>
-          <Text>No hi ha dades disponibles.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={data}
-          style={styles.flatList} // Estilo agregado para el FlatList
-          renderItem={({ item }) => (
-            <InfoCard 
-              title={item.Title} 
-              description={item.Description}
-              date="01/07/2022" // Puedes reemplazar con la fecha adecuada de la BD
-              location="Barcelona-Catalonia" // Puedes reemplazar con una ubicación real
-              likes={14} // Ejemplo, reemplazar con el valor de likes de tu BD si lo tienes
-              imageUrl={item.Image_URL || 'https://ruta-default.com/default.jpg'} // Reemplazo con una imagen por defecto si falta
-              onLikePress={() => Alert.alert("Liked", "Te gusta: " + item.Title)}
-              onLocationPress={() => Alert.alert("Ubicación", item.Title + " está aquí")}
-            />
-          )}
-          keyExtractor={item => item.id}
-        />
-      )}
-
       <View style={styles.bottomBar}>
         <FSection 
           currentSection={3} 
@@ -74,7 +24,7 @@ export default function Add({ navigation }) {
             else if (id === 2) navigation.navigate("Map");
             else if (id === 3) navigation.navigate("Add"); 
             else if (id === 4) navigation.navigate("Favorites"); 
-            else if (id === 5) navigation.navigate("Account"); 
+            else if (id === 5) navigation.navigate("Account");
           }} 
         />
       </View>
@@ -82,34 +32,28 @@ export default function Add({ navigation }) {
   );
 }
 
+// Estils
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF', // Fons blanc
   },
   topBar: {
-    height: 80, 
-    backgroundColor: '#FFF', 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#ccc', 
-    justifyContent: 'flex-end',
-  },
-  noDataContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  flatList: {
-    marginTop: 10, // Espacio entre la barra superior y la lista
+    height: 80, // Alçada de la barra superior
+    backgroundColor: '#FFF', // Fons blanc
+    borderBottomWidth: 1, // Línia inferior de la barra
+    borderBottomColor: '#ccc', // Color de la línia
+    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
+    paddingBottom: 0, // Espai inferior per a millor visualització
   },
   bottomBar: {
-    position: 'absolute', 
-    bottom: 0, 
+    position: 'absolute', // Posiciona absolutament la barra inferior
+    bottom: 0, // Ancorar a la part inferior
     left: 0,
     right: 0,
-    height: 60, 
-    backgroundColor: '#FFF', 
-    borderTopWidth: 1, 
-    borderTopColor: '#ccc', 
+    height: 60, // Alçada de la barra inferior
+    backgroundColor: '#FFF', // Fons blanc per la barra inferior
+    borderTopWidth: 1, // Línia superior de la barra
+    borderTopColor: '#ccc', // Color de la línia
   },
 });
