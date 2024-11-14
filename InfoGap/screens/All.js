@@ -41,19 +41,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF', // Fons blanc
   },
   topBar: {
-    height: 80, // Alçada de la barra superior
     backgroundColor: '#FFF', // Fons blanc
     borderBottomWidth: 1, // Línia inferior de la barra
     borderBottomColor: '#ccc', // Color de la línia
     justifyContent: 'flex-end', // Alinea el contingut a la part inferior
-    paddingBottom: 0, // Espai inferior per a millor visualització
   },
   bottomBar: {
     position: 'absolute', // Posiciona absolutament la barra inferior
     bottom: 0, // Ancorar a la part inferior
     left: 0,
     right: 0,
-    height: 60, // Alçada de la barra inferior
+
     backgroundColor: '#FFF', // Fons blanc per la barra inferior
     borderTopWidth: 1, // Línia superior de la barra
     borderTopColor: '#ccc', // Color de la línia

@@ -106,12 +106,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF', 
   },
   topBar: {
-    height: 100,  // Height of the top bar
     backgroundColor: '#FFF', 
     borderBottomWidth: 1, 
     borderBottomColor: '#ccc', 
     justifyContent: 'flex-end',
-    paddingTop: 20, // Space on top of the top bar
   },
   listContainer: {
     paddingBottom: 100, // Increase bottom padding to avoid obstruction from the bottom bar
