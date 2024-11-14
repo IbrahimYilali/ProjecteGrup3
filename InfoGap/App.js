@@ -11,7 +11,7 @@ import Add from './screens/Add';
 import Information from './screens/Information';
 import Favorites from './screens/Favorites';
 import Account from './screens/Account';
-
+import Filters from './screens/Filters';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,8 +29,7 @@ export default function App() {
         <Stack.Screen name="Information" component={Information} />
         <Stack.Screen name="Favorites" component={Favorites} options={{ headerShown: false , animation: 'none'}}/>
         <Stack.Screen name="Account" component={Account} options={{ headerShown: false , animation: 'none'}}/>
-
-
+        <Stack.Screen name="Filters" component={Filters} options={{ headerShown: false , animation: 'none'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

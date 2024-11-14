@@ -9,12 +9,12 @@ export default function Favorites({ navigation }) {
       
       {/* Barra de navegació superior */}
       <View style={styles.topBar}>
-        <FSuperior 
+      <FSuperior 
           onPress={(id) => {
             if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
+            else if (id === 2) navigation.navigate("Filters");
           }} 
-        />
+        /> 
       </View>
 
       {/* Barra de navegació inferior */}
