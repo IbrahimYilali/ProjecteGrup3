@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Gap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #dishes-container {
+            padding: 10px;
+        }
+
+        .dish-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .dish-card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .dish-card h2 {
+            margin: 10px 0;
+        }
+
+        .dish-card p {
+            text-align: center;
+            color: #555;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f8f8;
+        }
+
+        footer nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: #333;
+            font-size: 24px;
+        }
+
+        footer a.active {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Info Gap</h1>
+        <input type="text" id="searchInput" placeholder="Buscar...">
+    </header>
+    <main>
+        <div id="dishes-container"></div>
+    </main>
+    <footer>
+        <nav>
+            <a href="#" class="active">🏠</a>
+            <a href="#">📍</a>
+            <a href="#">➕</a>
+            <a href="#">❤️</a>
+        </nav>
+    </footer>
+    <script>
+        // Array per emmagatzemar els plats
+        const dishes = [];
+
+        // Funció per crear i mostrar els plats
+        function displayDishes() {};
+        
+
+        // Funció per gestionar la cerca
+        function handleSearch() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredDishes = dishes.filter(dish => 
+                dish.name.toLowerCase().includes(searchInput) || 
+                dish.description.toLowerCase().includes(searchInput)
+            );
+
+            // Mostrar els plats filtrats
+            const container = document.getElementById('dishes-container');
+            container.innerHTML = ''; // Limpar el contenidor
+
+            filteredDishes.forEach(dish => {
+                const dishCard = document.createElement('div');
+                dishCard.className = 'dish-card';
+                dishCard.innerHTML = `
+                    <img src="${dish.image}" alt="${dish.name}">
+                    <h2>${dish.name}</h2>
+                    <p>${dish.description}</p>
+                    <p>${dish.date}</p>
+                    <p>${dish.location}</p>
+                    <p>❤️ ${dish.likes}</p>
+                `;
+                container.appendChild(dishCard);
+            });
+        }
+
+        // Afegir esdeveniments al carregar la pàgina
+        document.addEventListener('DOMContentLoaded', () => {
+            displayDishes(); // Mostrar plats al carregar la pàgina
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+        });
+    </script>
+</body>
+</html>
