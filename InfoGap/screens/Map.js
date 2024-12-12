@@ -1,61 +1,80 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
+import FSuperior from '../components/FSuperior';
 
-export default function Map({ navigation }) {
+export default function Map({ route, navigation }) {
+  const { latitude, longitude, locationName, description } = route.params;
+
   return (
     <View style={styles.container}>
-      
-      {/* Barra de navegació superior */}
+      {/* Barra superior */}
       <View style={styles.topBar}>
-        <FSuperior 
+        <FSuperior
           onPress={(id) => {
-            if (id === 1) navigation.goBack(); 
+            if (id === 1) navigation.goBack();
             else if (id === 2) navigation.navigate("Home");
-          }} 
+          }}
         />
       </View>
 
-      {/* Barra de navegació inferior */}
+      {/* Mapa principal */}
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude,
+          longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+      >
+        <Marker
+          coordinate={{ latitude, longitude }}
+          title={locationName}
+          description={description}
+        />
+      </MapView>
+
+      {/* Barra inferior */}
       <View style={styles.bottomBar}>
-        <FSection 
-          currentSection={2} 
+        <FSection
+          currentSection={2} // Indica que estamos en la sección del mapa
           onPress={(id) => {
-            if (id === 1) navigation.navigate("All"); 
-            else if (id === 2) navigation.navigate("Map");
-            else if (id === 3) navigation.navigate("Add"); 
-            else if (id === 4) navigation.navigate("Favorites"); 
-            else if (id === 5) navigation.navigate("Account");  
-          }} 
+            if (id === 1) navigation.navigate("All");
+            else if (id === 2) navigation.navigate("Map"); // Queda en el mapa
+            else if (id === 3) navigation.navigate("Add");
+            else if (id === 4) navigation.navigate("Favorites");
+            else if (id === 5) navigation.navigate("Account");
+          }}
         />
       </View>
     </View>
   );
 }
 
-// Estils
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', // Fons blanc
+    backgroundColor: '#FFF',
   },
   topBar: {
-    height: 80, // Alçada de la barra superior
-    backgroundColor: '#FFF', // Fons blanc
-    borderBottomWidth: 1, // Línia inferior de la barra
-    borderBottomColor: '#ccc', // Color de la línia
-    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
-    paddingBottom: 0, // Espai inferior per a millor visualització
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    justifyContent: 'flex-end',
+  },
+  map: {
+    flex: 1,
   },
   bottomBar: {
-    position: 'absolute', // Posiciona absolutament la barra inferior
-    bottom: 0, // Ancorar a la part inferior
+    position: 'absolute',
+    bottom: 0,
     left: 0,
     right: 0,
-    height: 60, // Alçada de la barra inferior
-    backgroundColor: '#FFF', // Fons blanc per la barra inferior
-    borderTopWidth: 1, // Línia superior de la barra
-    borderTopColor: '#ccc', // Color de la línia
+    height: 80, // Altura de la barra inferior
+    backgroundColor: '#FFF',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
 });

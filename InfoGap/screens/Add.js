@@ -1,76 +1,111 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Alert, StyleSheet, Text } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore'; 
-import db from '../Firebase/FirebaseConfig'; 
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, Text } from 'react-native';
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
-import QuestionCell from '../components/QuestionCell'; 
+import InfoCard from '../components/InfoCard';
 
 export default function Add({ navigation }) {
-  const [data, setData] = useState([]); 
+  const [data, setData] = useState([
+    {
+      id: 1,
+      Title: "Casa Milà",
+      Description: "Modernist building by Antoni Gaudí.",
+      Date: "01/07/2022",
+      Location: "Barcelona, Spain",
+      Latitude: 41.3953,
+      Longitude: 2.1619,
+      Likes: 0,
+      Image_URL: '../assets/images/default_image.jpg',
+    },
+    {
+      id: 2,
+      Title: "Sagrada Família",
+      Description: "Catholic basilica designed by Antoni Gaudí.",
+      Date: "15/08/2022",
+      Location: "Barcelona, Spain",
+      Latitude: 41.4036,
+      Longitude: 2.1744,
+      Likes: 0,
+      Image_URL: '../assets/images/default_image.jpg',
+    },
+    {
+      id: 3,
+      Title: "Park Güell",
+      Description: "Public park with gardens and architectural elements by Gaudí.",
+      Date: "20/09/2022",
+      Location: "Barcelona, Spain",
+      Latitude: 41.4145,
+      Longitude: 2.1527,
+      Likes: 0,
+      Image_URL: '../assets/images/default_image.jpg',
+    },
+  ]);
 
-  const fetchData = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'Preguntes'));
-      const dataFromFirestore = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-      }));
-      console.log(dataFromFirestore); // Agregat per depuració
-      setData(dataFromFirestore); 
-    } catch (error) {
-      console.error("Error al obtener los datos: ", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handlePress = (title) => {
-    Alert.alert('Clicat', 'Has clicat a: ' + title);
+  // Función para manejar el incremento de los "likes"
+  const handleLikePress = (index) => {
+    const updatedData = [...data];
+    updatedData[index].Likes = (updatedData[index].Likes || 0) + 1; // Incrementar los likes
+    setData(updatedData); // Actualizar el estado con los nuevos datos
   };
 
   return (
     <View style={styles.container}>
+      {/* Barra superior */}
       <View style={styles.topBar}>
         <FSuperior 
           onPress={(id) => {
-            if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
+            if (id === 1) navigation.goBack(); // Volver atrás
+            else if (id === 2) navigation.navigate("Home"); // Navegar a Home
           }} 
         />
       </View>
 
-      {data.length === 0 ? (
-        <View style={styles.noDataContainer}>
-          <Text>No hi ha dades disponibles.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={data}
-          renderItem={({ item }) => (
-            <QuestionCell 
-              title={item.Title} 
-              longitude={item.Geolocation ? item.Geolocation.longitude : null} // Canviat a Geolocation
-              latitude={item.Geolocation ? item.Geolocation.latitude : null} // Canviat a Geolocation
-              imageUrl={item.Image_URL} // Canviat a Image_URL
-              onPress={() => handlePress(item.Title)} // Passant el títol
-            />
-          )}
-          keyExtractor={item => item.id}
-        />
-      )}
+      {/* FlatList para mostrar las tarjetas de información */}
+      <FlatList
+        contentContainerStyle={styles.listContainer}
+        data={data} // Datos que estamos utilizando para renderizar los elementos
+        renderItem={({ item, index }) => (
+          <InfoCard 
+            title={item.Title} // Título del lugar
+            description={item.Description} // Descripción del lugar
+            date={item.Date} // Fecha de creación
+            location={item.Location} // Ubicación del lugar
+            likes={item.Likes || 0} // Muestra los likes, por defecto 0
+            imageUrl={item.Image_URL} // Imagen del lugar
+            onPress={() => 
+              navigation.navigate("Information", {
+                title: item.Title,
+                description: item.Description,
+                location: item.Location,
+                imageUrl: item.Image_URL,
+                date: item.Date,
+                initialLikes: item.Likes,
+              })
+            }
+            onLocationPress={() => 
+              navigation.navigate("Map", {
+                latitude: item.Latitude, // Coordenadas para el mapa
+                longitude: item.Longitude,
+                locationName: item.Title, // Nombre del lugar
+                description: item.Description, // Descripción específica
+              })
+            }
+            onLikePress={() => handleLikePress(index)} // Llamar a la función para aumentar los likes
+          />
+        )}
+        keyExtractor={item => item.id.toString()} // Establecer el identificador único de cada ítem
+      />
 
+      {/* Barra inferior */}
       <View style={styles.bottomBar}>
         <FSection 
-          currentSection={3} 
+          currentSection={3} // Esta es la sección actual: "Add"
           onPress={(id) => {
-            if (id === 1) navigation.navigate("All"); 
-            else if (id === 2) navigation.navigate("Map");
-            else if (id === 3) navigation.navigate("Add"); 
-            else if (id === 4) navigation.navigate("Favorites"); 
-            else if (id === 5) navigation.navigate("Account"); 
+            if (id === 1) navigation.navigate("All"); // Navegar a la pantalla "All"
+            else if (id === 2) navigation.navigate("Map"); // Navegar al mapa
+            else if (id === 3) navigation.navigate("Add"); // Esta sección, "Add"
+            else if (id === 4) navigation.navigate("Favorites"); // Navegar a favoritos
+            else if (id === 5) navigation.navigate("Account"); // Navegar a cuenta
           }} 
         />
       </View>
@@ -78,29 +113,30 @@ export default function Add({ navigation }) {
   );
 }
 
+// Estilos de la pantalla
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF', // Fondo blanco
   },
   topBar: {
-    height: 80, 
     backgroundColor: '#FFF', 
     borderBottomWidth: 1, 
     borderBottomColor: '#ccc', 
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end', // Alinear la barra superior hacia el final
   },
-  noDataContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  listContainer: {
+    paddingBottom: 100, // Espaciado extra en la parte inferior para la barra
+    paddingTop: 10, // Espaciado en la parte superior
+    paddingHorizontal: 16, // Relleno lateral
+    alignItems: 'center', // Alinear los ítems al centro
   },
   bottomBar: {
     position: 'absolute', 
     bottom: 0, 
     left: 0,
     right: 0,
-    height: 60, 
+    height: 80,  // Altura de la barra inferior
     backgroundColor: '#FFF', 
     borderTopWidth: 1, 
     borderTopColor: '#ccc', 
