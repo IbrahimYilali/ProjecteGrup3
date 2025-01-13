@@ -1,95 +1,178 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore";
+import { db } from "../Firebase/FirebaseConfig"; // Importación correcta de la configuración de Firestore
 
 const InfoCard = ({
-  title,
-  description,
-  date,
-  location,
-  likes,
+  title = "Title",
+  description = "Description goes here",
+  date = "Date",
+  location = "Location",
+  initialFavorites = false,
   imageUrl,
-  onPress,
+  documentId, // Si es undefined, se generará un nuevo documento
   onLocationPress,
-  onLikePress,
 }) => {
+  const [liked, setLiked] = useState(initialFavorites);
+  const [likes, setLikes] = useState(0); // Inicializar likes en 0
+  const [docId, setDocId] = useState(documentId); // Guardar el ID del documento generado
+
+  useEffect(() => {
+    const initializeDocument = async () => {
+      try {
+        const collectionRef = collection(db, "Preguntas");
+        if (!docId) {
+          // Crear un nuevo documento si no hay un documentId
+          const newDocRef = doc(collectionRef, new Date().getTime().toString()); // Generar un ID único basado en el tiempo
+          const newData = {
+            title,
+            description,
+            date,
+            location,
+            likes: 0,
+            Favorites: initialFavorites,
+          };
+          await setDoc(newDocRef, newData);
+          setDocId(newDocRef.id); // Guardar el nuevo ID generado
+          console.log("Documento creado con ID:", newDocRef.id);
+        } else {
+          // Cargar el documento existente
+          const docRef = doc(db, "Preguntas", docId);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setLikes(data.likes || 0);
+            setLiked(data.Favorites || false);
+          } else {
+            console.error("No se encontró el documento.");
+          }
+        }
+      } catch (error) {
+        console.error("Error al inicializar documento en Firestore:", error);
+        Alert.alert("Error", "No se pudo inicializar el documento.");
+      }
+    };
+
+    initializeDocument();
+  }, [docId]);
+
+  const handleLikePress = async () => {
+    try {
+      if (!docId) {
+        console.error("El ID del documento no está definido.");
+        return; // Salir de la función si el ID del documento no está definido
+      }
+
+      const newLikedState = !liked;
+      setLiked(newLikedState);
+
+      const docRef = doc(db, "Preguntas", docId);
+      const newLikes = newLikedState ? likes + 1 : likes - 1;
+
+      await updateDoc(docRef, {
+        Favorites: newLikedState,
+        likes: newLikes,
+      });
+
+      setLikes(newLikes);
+    } catch (error) {
+      console.error("Error al actualizar Firestore:", error);
+      Alert.alert("Error", "No se pudieron actualizar los datos.");
+    }
+  };
+
+  const imageSource = imageUrl
+    ? { uri: imageUrl }
+    : require('../assets/default_image.jpg');
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.card}>
-      <Image source={{ uri: imageUrl }} style={styles.image} />
-      <View style={styles.info}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description} numberOfLines={2}>{description}</Text>
-        <Text style={styles.date}>{date}</Text>
-        <TouchableOpacity onPress={onLocationPress} style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="red" />
-          <Text style={styles.location}>{location}</Text>
-        </TouchableOpacity>
-        <View style={styles.likesContainer}>
-          <TouchableOpacity onPress={onLikePress} style={styles.likeButton}>
-            <Ionicons name="heart" size={20} color="red" />
-            <Text style={styles.likeText}>{likes} </Text>
-          </TouchableOpacity>
+    <View style={styles.cardContainer}>
+      <Text style={styles.title}>{title}</Text>
+      <View style={styles.rowContainer}>
+        <Image source={imageSource} style={styles.image} />
+        <View style={styles.textContainer}>
+          <Text style={styles.description}>{description}</Text>
+          <Text style={styles.date}>{date}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.likeButton} onPress={handleLikePress}>
+          <Icon name={liked ? "heart" : "heart-outline"} size={20} color="red" />
+          <Text style={styles.likeText}>{likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.locationButton} onPress={onLocationPress}>
+          <Icon name="location-outline" size={20} color="red" />
+          <Text style={styles.locationText}>{location}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    marginBottom: 12,
-    elevation: 1,
-    overflow: 'hidden',
-    maxWidth: '100%', // Reduce the width of the card
-    alignSelf: 'left', // Center the card
+  cardContainer: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3.8,
+    elevation: 5,
+    marginHorizontal: 15,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 10,
   },
   image: {
-    width: '100%',
-    height: 100, // Reduced height
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    width: '40%',
+    height: 120,
+    borderRadius: 10,
+    marginRight: 10,
   },
-  info: {
-    padding: 12,
+  textContainer: {
+    width: '55%',
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   description: {
-    fontSize: 12,
-    marginBottom: 8,
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 7,
   },
   date: {
-    fontSize: 10,
-    color: 'gray',
-    marginBottom: 8,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'left',
-    marginBottom: 8,
-  },
-  location: {
     fontSize: 12,
-    color: 'gray',
-    marginLeft: 4,
+    color: '#999',
   },
-  likesContainer: {
+  footer: {
     flexDirection: 'row',
-    alignItems: 'left',
-    marginTop: 4,
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
   likeButton: {
     flexDirection: 'row',
-    alignItems: 'left',
+    alignItems: 'center',
   },
   likeText: {
-    marginLeft: 4,
-    fontSize: 12,
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  locationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: 'red',
   },
 });
 

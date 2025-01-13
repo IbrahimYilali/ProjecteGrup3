@@ -15,4 +15,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app); // Obtenir la instància de Firestore
 
-export default db; // Exportar la instància de Firestore
+export default db;
