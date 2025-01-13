@@ -1,49 +1,60 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'; // Importem la llibreria d'Expo per seleccionar imatges
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { signOut } from 'firebase/auth'; // Importar signOut
+import { auth } from '../Firebase/FirebaseConfig'; // Asegúrate de importar correctamente Firebase
 
 export default function Account({ navigation }) {
-  const [username] = useState("User1"); 
+  const [username] = useState("User1");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [profileImage, setProfileImage] = useState(null); 
+  const [profileImage, setProfileImage] = useState(null);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleImagePicker = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
-      if (response.didCancel) {
-        console.log("Image picker cancelled");
-      } else if (response.errorCode) {
-        console.log("Image picker error: ", response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0].uri;
-        setProfileImage(selectedImage); 
-      }
+  const handleImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4], // Si vols retallar la imatge després de seleccionar-la
+      quality: 1, // Qualitat màxima
     });
+
+    if (!result.cancelled) {
+      setProfileImage(result.uri); // Guardem el camí de la imatge seleccionada
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);  // Cierra la sesión del usuario
+      navigation.navigate('Login');  // Redirige a la pantalla de Login
+    } catch (error) {
+      console.log('Error al cerrar sesión:', error.message);
+      alert('Error al cerrar sesión');
+    }
   };
 
   return (
     <View style={styles.container}>
-      
-      {/* Barra de navegación superior */}
+      {/* Barra de navegació superior */}
       <View style={styles.topBar}>
-        <FSuperior 
+        <FSuperior
           onPress={(id) => {
-            if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
-          }} 
+            if (id === 1) navigation.goBack();
+            else if (id === 2) navigation.navigate("Search");
+          }}
         />
       </View>
 
-      {/* Sección de configuración con recuadro */}
+      {/* Secció de configuració amb recuadro */}
       <View style={styles.settingsContainer}>
         <View style={styles.box}>
-          {/* Foto de perfil y cambio */}
+          {/* Foto de perfil i canvi */}
           <View style={styles.profileContainer}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.profileImage} />
@@ -55,17 +66,17 @@ export default function Account({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Nombre de usuario (inmodificable) */}
+          {/* Nom d'usuari (inmodificable) */}
           <View style={styles.fieldContainer}>
             <Text style={styles.fieldLabel}>Username</Text>
             <Text style={styles.usernameText}>{username}</Text>
           </View>
 
-          {/* Contraseña con funcionalidad de ocultar/mostrar */}
+          {/* Contrassenya amb funcionalitat de mostrar/ocultar */}
           <View style={styles.fieldContainer}>
             <Text style={styles.fieldLabel}>Password</Text>
-            <TextInput 
-              style={styles.inputField} 
+            <TextInput
+              style={styles.inputField}
               placeholder="Write here."
               secureTextEntry={!isPasswordVisible}
               value={password}
@@ -78,65 +89,65 @@ export default function Account({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Descripción */}
+          {/* Descripció */}
           <Text style={styles.descriptionTitle}>Description</Text>
-          <TextInput 
-            style={styles.inputDescription} 
-            placeholder="Write here." 
-            multiline={true} 
+          <TextInput
+            style={styles.inputDescription}
+            placeholder="Write here."
+            multiline={true}
           />
         </View>
 
-        {/* Botón de cerrar sesión */}
-        <TouchableOpacity style={styles.logoutButton}>
+        {/* Botó de tancar sessió */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Barra de navegación inferior */}
+      {/* Barra de navegació inferior */}
       <View style={styles.bottomBar}>
-        <FSection 
-          currentSection={5} 
+        <FSection
+          currentSection={5}
           onPress={(id) => {
-            if (id === 1) navigation.navigate("All"); 
+            if (id === 1) navigation.navigate("All");
             else if (id === 2) navigation.navigate("Map");
-            else if (id === 3) navigation.navigate("Add"); 
-            else if (id === 4) navigation.navigate("Favorites"); 
-            else if (id === 5) navigation.navigate("Account"); 
-          }} 
+            else if (id === 3) navigation.navigate("Add");
+            else if (id === 4) navigation.navigate("Favorites");
+            else if (id === 5) navigation.navigate("Account");
+          }}
         />
       </View>
     </View>
   );
 }
 
-// Estilos
+// Estils
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', 
+    backgroundColor: '#f4f4f4',
   },
   topBar: {
-    backgroundColor: '#FFF', 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#ccc', 
+    height: 80,
+    backgroundColor: '#c5bbbb',
+    borderBottomWidth: 1,
+    borderBottomColor: '#c5bbbb',
     justifyContent: 'flex-end',
   },
   bottomBar: {
-    position: 'absolute',
-    bottom: 0,
+    position: 'absolute', // Posiciona absolutament la barra inferior
+    bottom: 0, // Ancorar a la part inferior
     left: 0,
     right: 0,
-    backgroundColor: '#FFF',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    justifyContent: 'flex-end',
+    backgroundColor: '#c5bbbb', // Fons blanc per la barra inferior
+    borderTopWidth: 1, // Línia superior de la barra
+    borderTopColor: '#ccc', // Color de la línia
   },
   settingsContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 25,
   },
   box: {
     backgroundColor: '#E5E5E5',
@@ -180,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   fieldLabel: {
-    width: 80,
+    width: 90,
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -8,11 +8,12 @@ export default function FBSuperior({
     id,
     isSelected,
     onPress,
-    isCircular = false // Propietat per determinar si és circular
+    isCircular = false, // Propietat per determinar si és circular
+    color = '#c5bbbb', // Color del botón
 }) {
     return (
         <TouchableOpacity onPress={() => onPress(id)} style={styles.buttonContainer}>
-            <View style={[styles.iconContainer, isCircular && styles.circular]}>
+            <View style={[styles.iconContainer, isCircular && styles.circular, { backgroundColor: color }]}>
                 <Icon
                     name={isSelected ? selectedIcon : unselectedIcon}
                     size={isCircular ? 40 : 30} // Mida de l'icona

@@ -1,4 +1,6 @@
+// Importarem les funcions necessàries des del SDK de Firebase
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -11,8 +13,12 @@ const firebaseConfig = {
   measurementId: "G-GP7QR71Q3S"
 };
 
-// Inicialitzar Firebase
+// Inicialitzarem l'aplicació de Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app); // Obtenir la instància de Firestore
 
-export default db; // Exportar la instància de Firestore
+// Inicialitzarem els serveis d'Autenticació i Firestore
+const auth = getAuth(app); // Crearem el servei d'autenticació
+const db = getFirestore(app); // Crearem el servei de base de dades Firestore
+
+// Exportarem els serveis per utilitzar-los en altres parts de l'aplicació
+export { auth, db };

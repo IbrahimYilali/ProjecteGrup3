@@ -1,27 +1,95 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore";
+import { db } from "../Firebase/FirebaseConfig"; // Importación correcta de la configuración de Firestore
 
 const InfoCard = ({
   title = "Title",
   description = "Description goes here",
   date = "Date",
   location = "Location",
-  likes = 0,
+  initialFavorites = false,
   imageUrl,
-  onLikePress,
+  documentId, // Si es undefined, se generará un nuevo documento
   onLocationPress,
 }) => {
+  const [liked, setLiked] = useState(initialFavorites);
+  const [likes, setLikes] = useState(0); // Inicializar likes en 0
+  const [docId, setDocId] = useState(documentId); // Guardar el ID del documento generado
+
+  useEffect(() => {
+    const initializeDocument = async () => {
+      try {
+        const collectionRef = collection(db, "Preguntas");
+        if (!docId) {
+          // Crear un nuevo documento si no hay un documentId
+          const newDocRef = doc(collectionRef, new Date().getTime().toString()); // Generar un ID único basado en el tiempo
+          const newData = {
+            title,
+            description,
+            date,
+            location,
+            likes: 0,
+            Favorites: initialFavorites,
+          };
+          await setDoc(newDocRef, newData);
+          setDocId(newDocRef.id); // Guardar el nuevo ID generado
+          console.log("Documento creado con ID:", newDocRef.id);
+        } else {
+          // Cargar el documento existente
+          const docRef = doc(db, "Preguntas", docId);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setLikes(data.likes || 0);
+            setLiked(data.Favorites || false);
+          } else {
+            console.error("No se encontró el documento.");
+          }
+        }
+      } catch (error) {
+        console.error("Error al inicializar documento en Firestore:", error);
+        Alert.alert("Error", "No se pudo inicializar el documento.");
+      }
+    };
+
+    initializeDocument();
+  }, [docId]);
+
+  const handleLikePress = async () => {
+    try {
+      if (!docId) {
+        console.error("El ID del documento no está definido.");
+        return; // Salir de la función si el ID del documento no está definido
+      }
+
+      const newLikedState = !liked;
+      setLiked(newLikedState);
+
+      const docRef = doc(db, "Preguntas", docId);
+      const newLikes = newLikedState ? likes + 1 : likes - 1;
+
+      await updateDoc(docRef, {
+        Favorites: newLikedState,
+        likes: newLikes,
+      });
+
+      setLikes(newLikes);
+    } catch (error) {
+      console.error("Error al actualizar Firestore:", error);
+      Alert.alert("Error", "No se pudieron actualizar los datos.");
+    }
+  };
+
   const imageSource = imageUrl
-  ? { uri: imageUrl }
-  : require('../assets/images/default_image.jpg');
+    ? { uri: imageUrl }
+    : require('../assets/default_image.jpg');
 
   return (
     <View style={styles.cardContainer}>
-      {/* Contenedor del título */}
       <Text style={styles.title}>{title}</Text>
-      
-      {/* Contenedor de imagen y texto */}
       <View style={styles.rowContainer}>
         <Image source={imageSource} style={styles.image} />
         <View style={styles.textContainer}>
@@ -29,14 +97,11 @@ const InfoCard = ({
           <Text style={styles.date}>{date}</Text>
         </View>
       </View>
-
-      {/* Footer con botones de like y ubicación debajo de la imagen */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.likeButton} onPress={onLikePress}>
-          <Icon name="heart-outline" size={20} color="red" />
+        <TouchableOpacity style={styles.likeButton} onPress={handleLikePress}>
+          <Icon name={liked ? "heart" : "heart-outline"} size={20} color="red" />
           <Text style={styles.likeText}>{likes}</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.locationButton} onPress={onLocationPress}>
           <Icon name="location-outline" size={20} color="red" />
           <Text style={styles.locationText}>{location}</Text>
@@ -60,18 +125,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   rowContainer: {
-    flexDirection: 'row', // Coloca la imagen y el texto en fila
+    flexDirection: 'row',
     alignItems: 'flex-start',
-    marginVertical: 10, // Espacio vertical entre el título y el contenido
+    marginVertical: 10,
   },
   image: {
-    width: '40%', // Imagen ocupa el 40% del ancho del contenedor
+    width: '40%',
     height: 120,
     borderRadius: 10,
-    marginRight: 10, // Espacio entre imagen y contenedor de texto
+    marginRight: 10,
   },
   textContainer: {
-    width: '55%', // Contenedor de texto ocupa el 55% del ancho
+    width: '55%',
   },
   title: {
     fontSize: 18,
@@ -86,12 +151,11 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: '#999',
-    marginBottom: 0,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10, // Espacio entre el contenido y los botones
+    marginTop: 10,
   },
   likeButton: {
     flexDirection: 'row',

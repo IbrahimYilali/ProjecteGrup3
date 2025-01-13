@@ -63,10 +63,10 @@ export default function Search({ navigation }) {
         <View style={styles.container}>
             {/* Barra superior */}
             <View style={styles.topBar}>
-                <FSuperior 
+                <FSuperior
                     onPress={(id) => {
                         if (id === 1) navigation.goBack();
-                    }} 
+                    }}
                 />
             </View>
 
@@ -107,15 +107,15 @@ export default function Search({ navigation }) {
 
             {/* Barra inferior de navegación */}
             <View style={styles.bottomBar}>
-                <FSection 
-                    currentSection={3} 
+                <FSection
+                    currentSection={3}
                     onPress={(id) => {
-                        if (id === 1) navigation.navigate("All"); 
+                        if (id === 1) navigation.navigate("All");
                         else if (id === 2) navigation.navigate("Map");
-                        else if (id === 3) navigation.navigate("Add"); 
-                        else if (id === 4) navigation.navigate("Favorites"); 
-                        else if (id === 5) navigation.navigate("Account"); 
-                    }} 
+                        else if (id === 3) navigation.navigate("Add");
+                        else if (id === 4) navigation.navigate("Favorites");
+                        else if (id === 5) navigation.navigate("Account");
+                    }}
                 />
             </View>
         </View>
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
     },
     topBar: {
         height: 80,
-        backgroundColor: '#FFF',
+        backgroundColor: '#c5bbbb',
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#c5bbbb',
         justifyContent: 'flex-end',
     },
     searchInput: {
