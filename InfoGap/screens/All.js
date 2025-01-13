@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import db from '../Firebase/FirebaseConfig';
+import { db } from '../Firebase/FirebaseConfig';
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
 import InfoCard from '../components/InfoCard';
