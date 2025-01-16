@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Text, FlatList, Button } from 'react-native';
 import { getDocs, collection, query, orderBy, startAt, endAt } from 'firebase/firestore';
-import FSection from '../components/FSection';  // Asegúrate de tener este componente
-import FSuperior from '../components/FSuperior';  // Asegúrate de tener este componente
-import InfoCard from '../components/InfoCard';  // Asegúrate de tener este componente
-import db from '../Firebase/FirebaseConfig';  // Asegúrate de tener tu configuración de Firebase
+import FSection from '../components/FSection'; // Asegúrate de tener este componente
+import FSuperior from '../components/FSuperior'; // Asegúrate de tener este componente
+import InfoCard from '../components/InfoCard'; // Asegúrate de tener este componente
+import { db, auth } from '../Firebase/FirebaseConfig'; // Asegúrate de configurar correctamente Firebase
 
 export default function Search({ navigation }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Función para manejar la búsqueda al presionar el botón
+    // Función para manejar la búsqueda
     const handleSearch = async () => {
-        if (searchQuery.trim().length >= 1) {
-            setLoading(true);
-            try {
-                const q = query(
-                    collection(db, 'Preguntes'),
-                    orderBy('Title'),
-                    startAt(searchQuery),
-                    endAt(searchQuery + '\uf8ff')
-                );
+        const trimmedQuery = searchQuery.trim();
 
-                const querySnapshot = await getDocs(q);
+        if (trimmedQuery.length === 0) {
+            setResults([]);
+            return;
+        }
 
-                if (querySnapshot.empty) {
-                    console.log("No hay resultados para la búsqueda");
-                    setResults([]);
-                    setLoading(false);
-                    return;
-                }
+        setLoading(true);
 
+        try {
+            const searchQuery = trimmedQuery.charAt(0).toUpperCase() + trimmedQuery.slice(1); // Capitaliza la primera letra para búsquedas más precisas
+            const q = query(
+                collection(db, 'Preguntes'),
+                orderBy('Title'),
+                startAt(searchQuery),
+                endAt(searchQuery + '\uf8ff')
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                console.log("No hay resultados para la búsqueda");
+                setResults([]);
+            } else {
                 const cardsFromFirestore = querySnapshot.docs.map(doc => {
                     const data = doc.data();
-                    console.log('Data del documento:', data);  // Para depurar
 
                     return {
                         id: doc.id,
@@ -43,19 +47,17 @@ export default function Search({ navigation }) {
                         date: data.Date || "Sin fecha",
                         location: data.Location || "Sin ubicación",
                         likes: data.Likes || 0,
-                        imageUrl: data.Image_URL || null,  // Usando el campo correcto para la imagen
-                        geolocation: data.Geolocation || null,  // Usando el campo correcto para la geolocalización
+                        imageUrl: data.Image_URL || null,
+                        geolocation: data.Geolocation || null,
                     };
                 });
 
                 setResults(cardsFromFirestore);
-            } catch (error) {
-                console.error("Error al obtener los datos: ", error);
-            } finally {
-                setLoading(false);
             }
-        } else {
-            setResults([]);
+        } catch (error) {
+            console.error("Error al obtener los datos: ", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -94,15 +96,15 @@ export default function Search({ navigation }) {
                             date={item.date}
                             location={item.location}
                             likes={item.likes}
-                            imageUrl={item.imageUrl}  // Se pasa la URL de la imagen
-                            geolocation={item.geolocation}  // Se pasa la geolocalización
+                            imageUrl={item.imageUrl}
+                            geolocation={item.geolocation}
                             onLikePress={() => console.log(`Liked: ${item.title}`)}
                             onLocationPress={() => console.log(`Location: ${item.location}`)}
                         />
                     )}
                 />
             ) : (
-                <Text style={styles.noResultsText}>No se encontraron resultados.</Text>
+                !loading && <Text style={styles.noResultsText}>No se encontraron resultados.</Text>
             )}
 
             {/* Barra inferior de navegación */}
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
         height: 80,
         backgroundColor: '#c5bbbb',
         borderBottomWidth: 1,
-        borderBottomColor: '#c5bbbb',
+        borderBottomColor: '#ccc',
         justifyContent: 'flex-end',
     },
     searchInput: {
@@ -160,13 +162,12 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     bottomBar: {
-        position: 'absolute',
-        bottom: 0,
+        position: 'absolute', // Posiciona absolutament la barra inferior
+        bottom: 0, // Ancorar a la part inferior
         left: 0,
         right: 0,
-        height: 60,
-        backgroundColor: '#FFF',
-        borderTopWidth: 1,
-        borderTopColor: '#ccc',
+        backgroundColor: '#c5bbbb', // Fons blanc per la barra inferior
+        borderTopWidth: 1, // Línia superior de la barra
+        borderTopColor: '#ccc', // Color de la línia
     },
 });
