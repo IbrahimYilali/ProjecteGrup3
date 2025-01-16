@@ -65,7 +65,7 @@ export default function SignUp({ navigation }) {
                 {/* Inputs */}
                 <TextInput
                     style={styles.input}
-                    placeholder="User..."
+                    placeholder="Email..."
                     value={email}
                     onChangeText={text => setEmail(text)}
                     keyboardType="email-address"
