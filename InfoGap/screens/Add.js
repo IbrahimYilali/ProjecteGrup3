@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { GeoPoint } from 'firebase/firestore';
@@ -23,29 +23,45 @@ export default function Add({ navigation }) {
     });
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
     const [hasCameraRollPermission, setHasCameraRollPermission] = useState(false);
+    const [selectedType, setSelectedType] = useState('1'); // Default selected type is 'Monument'
+    const [modalVisible, setModalVisible] = useState(false); // State to control Modal visibility
 
     // Request permissions on component mount
     useEffect(() => {
         const getPermissions = async () => {
-            // Location permissions
-            const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
-            setHasLocationPermission(locationStatus === 'granted');
+            try {
+                // Demanar permisos de localització
+                const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
+                if (locationStatus !== 'granted') {
+                    alert('Location permission is required');
+                    return;
+                }
+                setHasLocationPermission(true);
 
-            // Camera roll permissions
-            const { status: cameraRollStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            setHasCameraRollPermission(cameraRollStatus === 'granted');
+                // Demanar permisos de galeria
+                const { status: cameraRollStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (cameraRollStatus !== 'granted') {
+                    alert('Camera roll permission is required');
+                    return;
+                }
+                setHasCameraRollPermission(true);
 
-            // If location permission is granted, get the current location
-            if (locationStatus === 'granted') {
-                const location = await Location.getCurrentPositionAsync({});
-                setLocation({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                });
+                // Si els permisos de localització es concedeixen, obtenir la ubicació actual
+                if (locationStatus === 'granted') {
+                    const location = await Location.getCurrentPositionAsync({});
+                    setLocation({
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                    });
+                }
+            } catch (error) {
+                console.error("Error requesting permissions:", error);
             }
         };
+
         getPermissions();
     }, []);
+
 
     // Open image picker
     const handleImagePicker = async () => {
@@ -113,6 +129,7 @@ export default function Add({ navigation }) {
             Geolocation: new GeoPoint(location.latitude, location.longitude), // Convert to GeoPoint
             Date: currentDate, // Save only the date
             Favorites: false, // Default Favorite field
+            Type: selectedType, // Save selected category type (e.g., Monument, Restaurant)
         };
 
         // If there's an image, upload it to Firebase Storage
@@ -137,6 +154,12 @@ export default function Add({ navigation }) {
             console.error("Error adding document: ", e);
             alert('Failed to upload data');
         }
+    };
+
+    // Handle the type selection from the modal
+    const handleSelectType = (type) => {
+        setSelectedType(type);
+        setModalVisible(false); // Close the modal after selection
     };
 
     return (
@@ -187,6 +210,13 @@ export default function Add({ navigation }) {
                             multiline
                         />
 
+                        {/* Modal for selecting category type */}
+                        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.pickerButton}>
+                            <Text style={styles.buttonText}>Select Category</Text>
+                        </TouchableOpacity>
+
+                        <Text>Selected Category: {selectedType}</Text>
+
                         {/* Map */}
                         {hasLocationPermission && location ? (
                             <View style={styles.mapContainer}>
@@ -213,7 +243,7 @@ export default function Add({ navigation }) {
                         </TouchableOpacity>
 
                         {/* Handle location press to navigate to "Map" */}
-                        <TouchableOpacity onPress={() => 
+                        <TouchableOpacity onPress={() =>
                             navigation.navigate("Map", {
                                 latitude: location.latitude,
                                 longitude: location.longitude,
@@ -238,6 +268,35 @@ export default function Add({ navigation }) {
                             }}
                         />
                     </View>
+
+                    {/* Modal for category selection */}
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalText}>Choose a Category:</Text>
+                                <TouchableOpacity onPress={() => handleSelectType('1')} style={styles.optionButton}>
+                                    <Text style={styles.buttonText}>Monument</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleSelectType('2')} style={styles.optionButton}>
+                                    <Text style={styles.buttonText}>Restaurant</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleSelectType('3')} style={styles.optionButton}>
+                                    <Text style={styles.buttonText}>Park</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleSelectType('4')} style={styles.optionButton}>
+                                    <Text style={styles.buttonText}>Museum</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+                                    <Text style={styles.buttonText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -287,6 +346,13 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 20,
     },
+    pickerButton: {
+        backgroundColor: '#c5bbbb',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 20,
+    },
     mapContainer: {
         height: 200,
         marginBottom: 20,
@@ -301,7 +367,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
-        marginTop: 20,
     },
     submitButtonText: {
         color: '#fff',
@@ -312,7 +377,38 @@ const styles = StyleSheet.create({
         backgroundColor: '#c5bbbb',
         borderTopWidth: 1,
         borderTopColor: '#c5bbbb',
+        justifyContent: 'flex-end',
+    },
+    modalContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    modalText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    optionButton: {
+        backgroundColor: '#c5bbbb',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    closeButton: {
+        backgroundColor: '#ff4c4c',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
     },
 });
