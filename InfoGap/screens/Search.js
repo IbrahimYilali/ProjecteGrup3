@@ -1,46 +1,10 @@
-<<<<<<< Updated upstream
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior'; // Assegura't que FSuperior estigui importat correctament
-
-export default function All({ navigation }) {
-  return (
-    <View style={styles.container}>
-      
-      {/* Barra de navegació superior */}
-      <View style={styles.topBar}>
-        <FSuperior 
-          onPress={(id) => {
-            if (id === 1) navigation.goBack(); 
-            else if (id === 2) navigation.navigate("Home");
-          }} 
-        />
-      </View>
-
-      {/* Barra de navegació inferior */}
-      <View style={styles.bottomBar}>
-        <FSection 
-          currentSection={1} 
-          onPress={(id) => {
-            if (id === 1) navigation.navigate("All"); 
-            else if (id === 2) navigation.navigate("Map");
-            else if (id === 3) navigation.navigate("Add"); 
-            else if (id === 4) navigation.navigate("Favorites"); 
-            else if (id === 5) navigation.navigate("Account");  
-          }} 
-        />
-      </View>
-    </View>
-  );
-=======
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Text, FlatList, Button, Image } from 'react-native';
+import { View, TextInput, StyleSheet, Text, FlatList, Button } from 'react-native';
 import { getDocs, collection, query, orderBy, startAt, endAt } from 'firebase/firestore';
-import FSection from '../components/FSection';
-import FSuperior from '../components/FSuperior';
-import InfoCard from '../components/InfoCard';
-import db from '../Firebase/FirebaseConfig';
+import FSection from '../components/FSection';  // Asegúrate de tener este componente
+import FSuperior from '../components/FSuperior';  // Asegúrate de tener este componente
+import InfoCard from '../components/InfoCard';  // Asegúrate de tener este componente
+import db from '../Firebase/FirebaseConfig';  // Asegúrate de tener tu configuración de Firebase
 
 export default function Search({ navigation }) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +24,7 @@ export default function Search({ navigation }) {
                 );
 
                 const querySnapshot = await getDocs(q);
-                
+
                 if (querySnapshot.empty) {
                     console.log("No hay resultados para la búsqueda");
                     setResults([]);
@@ -79,7 +43,7 @@ export default function Search({ navigation }) {
                         date: data.Date || "Sin fecha",
                         location: data.Location || "Sin ubicación",
                         likes: data.Likes || 0,
-                        imageUrl: data.Imagen_URL || null,  // Usando el campo correcto para la imagen
+                        imageUrl: data.Image_URL || null,  // Usando el campo correcto para la imagen
                         geolocation: data.Geolocation || null,  // Usando el campo correcto para la geolocalización
                     };
                 });
@@ -97,6 +61,7 @@ export default function Search({ navigation }) {
 
     return (
         <View style={styles.container}>
+            {/* Barra superior */}
             <View style={styles.topBar}>
                 <FSuperior 
                     onPress={(id) => {
@@ -105,6 +70,7 @@ export default function Search({ navigation }) {
                 />
             </View>
 
+            {/* Input de búsqueda */}
             <TextInput
                 style={styles.searchInput}
                 placeholder="Buscar..."
@@ -113,8 +79,10 @@ export default function Search({ navigation }) {
             />
             <Button title="Buscar" onPress={handleSearch} />
 
+            {/* Mensaje de carga */}
             {loading && <Text style={styles.loadingText}>Cargando...</Text>}
 
+            {/* Mostrar resultados de la búsqueda */}
             {results.length > 0 ? (
                 <FlatList
                     data={results}
@@ -137,6 +105,7 @@ export default function Search({ navigation }) {
                 <Text style={styles.noResultsText}>No se encontraron resultados.</Text>
             )}
 
+            {/* Barra inferior de navegación */}
             <View style={styles.bottomBar}>
                 <FSection 
                     currentSection={3} 
@@ -151,35 +120,9 @@ export default function Search({ navigation }) {
             </View>
         </View>
     );
->>>>>>> Stashed changes
 }
 
-// Estils
 const styles = StyleSheet.create({
-<<<<<<< Updated upstream
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF', // Fons blanc
-  },
-  topBar: {
-    height: 80, // Alçada de la barra superior
-    backgroundColor: '#FFF', // Fons blanc
-    borderBottomWidth: 1, // Línia inferior de la barra
-    borderBottomColor: '#ccc', // Color de la línia
-    justifyContent: 'flex-end', // Alinea el contingut a la part inferior
-    paddingBottom: 0, // Espai inferior per a millor visualització
-  },
-  bottomBar: {
-    position: 'absolute', // Posiciona absolutament la barra inferior
-    bottom: 0, // Ancorar a la part inferior
-    left: 0,
-    right: 0,
-    height: 60, // Alçada de la barra inferior
-    backgroundColor: '#FFF', // Fons blanc per la barra inferior
-    borderTopWidth: 1, // Línia superior de la barra
-    borderTopColor: '#ccc', // Color de la línia
-  },
-=======
     container: {
         flex: 1,
         backgroundColor: '#FFF',
@@ -226,5 +169,4 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: '#ccc',
     },
->>>>>>> Stashed changes
 });

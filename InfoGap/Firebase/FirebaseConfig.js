@@ -1,6 +1,8 @@
+// FirebaseConfig.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
+// Configuración de Firebase (debes usar tus propias credenciales)
 const firebaseConfig = {
   apiKey: "AIzaSyBxvbwFIkeNyQ5k8SIAGYJ0UPraGCpS4bA",
   authDomain: "test-c1325.firebaseapp.com",
@@ -11,8 +13,11 @@ const firebaseConfig = {
   measurementId: "G-GP7QR71Q3S"
 };
 
-// Inicialitzar Firebase
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app); // Obtenir la instància de Firestore
 
-export default db; // Exportar la instància de Firestore
+// Obtener la instancia de Firestore
+const db = getFirestore(app);
+
+// Exportar la instancia de Firestore
+export default db;
