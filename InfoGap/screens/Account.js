@@ -26,6 +26,7 @@ export default function Account({ navigation }) {
         await loadUserData(uid);
       } else {
         setUser((prevState) => ({ ...prevState, email: 'Unknown User' }));
+        Alert.alert('Error', 'User is not authenticated');
         navigation.navigate('Login'); // redirige al login si no está autenticado
       }
     });
@@ -34,6 +35,11 @@ export default function Account({ navigation }) {
 
   const loadUserData = async (userId) => {
     try {
+      if (!userId) {
+        Alert.alert('Error', 'User not authenticated');
+        return;
+      }
+
       const userDocRef = doc(db, 'users', userId);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
@@ -54,7 +60,10 @@ export default function Account({ navigation }) {
   };
 
   const handleImagePicker = () => {
-    if (!auth.currentUser) return;
+    if (!auth.currentUser) {
+      Alert.alert('Error', 'User is not authenticated');
+      return;
+    }
 
     launchImageLibrary(
       {
@@ -87,7 +96,7 @@ export default function Account({ navigation }) {
 
   const handleLogout = async () => {
     try {
-      if (!user.description) {
+      if (user.description.length === 0) {
         Alert.alert('Error', 'Description cannot be empty.');
         return;
       }
@@ -103,6 +112,16 @@ export default function Account({ navigation }) {
       navigation.navigate('Login');
     } catch (error) {
       Alert.alert('Error', 'Error logging out.');
+    }
+  };
+
+  const updateDescription = (text) => {
+    setUser((prevState) => ({ ...prevState, description: text }));
+    if (text.length <= 150) {
+      const userDocRef = doc(db, 'users', user.id);
+      updateDoc(userDocRef, { description: text })
+        .then(() => console.log('Description updated in Firestore'))
+        .catch((error) => Alert.alert('Error', 'Failed to update description'));
     }
   };
 
@@ -151,7 +170,7 @@ export default function Account({ navigation }) {
               style={styles.input}
               multiline
               value={user.description}
-              onChangeText={(text) => setUser((prevState) => ({ ...prevState, description: text }))}
+              onChangeText={updateDescription}
               placeholder="Enter your description"
               maxLength={150}
             />
