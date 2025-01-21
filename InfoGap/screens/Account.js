@@ -1,119 +1,177 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // Importem la llibreria d'Expo per seleccionar imatges
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { signOut } from 'firebase/auth';
+import { auth, storage, db } from '../Firebase/FirebaseConfig';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { launchImageLibrary } from 'react-native-image-picker';
 import FSection from '../components/FSection';
 import FSuperior from '../components/FSuperior';
-import { signOut } from 'firebase/auth'; // Importar signOut
-import { auth } from '../Firebase/FirebaseConfig'; // Asegúrate de importar correctamente Firebase
 
 export default function Account({ navigation }) {
-  const [username] = useState("User1");
-  const [password, setPassword] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [user, setUser] = useState({
+    email: '',
+    id: null,
+    type: 'Standard',
+    description: '',
+    profileImageUrl: '',
+  });
   const [profileImage, setProfileImage] = useState(null);
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (currentUser) {
+        const { email, uid } = currentUser;
+        setUser((prevState) => ({ ...prevState, email, id: uid }));
+        await loadUserData(uid);
+      } else {
+        setUser((prevState) => ({ ...prevState, email: 'Unknown User' }));
+        navigation.navigate('Login'); // redirige al login si no está autenticado
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const loadUserData = async (userId) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const { profileImageUrl, userType, description } = userDoc.data();
+        setUser((prevState) => ({
+          ...prevState,
+          type: userType || 'Standard',
+          description: description || '',
+          profileImageUrl: profileImageUrl || '',
+        }));
+        setProfileImage(profileImageUrl || '');
+      } else {
+        Alert.alert('Error', 'User data not found.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Error loading user data.');
+    }
   };
 
-  const handleImagePicker = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 4], // Si vols retallar la imatge després de seleccionar-la
-      quality: 1, // Qualitat màxima
-    });
+  const handleImagePicker = () => {
+    if (!auth.currentUser) return;
 
-    if (!result.cancelled) {
-      setProfileImage(result.uri); // Guardem el camí de la imatge seleccionada
-    }
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 200,
+        maxHeight: 200,
+        quality: 1,
+      },
+      async (response) => {
+        if (!response.didCancel && response.assets && response.assets.length > 0) {
+          const fileUri = response.assets[0].uri;
+          setProfileImage(fileUri);
+          const storageRef = ref(storage, `profileImages/${user.id}`);
+          try {
+            const responseBlob = await fetch(fileUri);
+            const blob = await responseBlob.blob();
+            await uploadBytes(storageRef, blob);
+            const url = await getDownloadURL(storageRef);
+            setUser((prevState) => ({ ...prevState, profileImageUrl: url }));
+            const userDocRef = doc(db, 'users', user.id);
+            await updateDoc(userDocRef, { profileImageUrl: url });
+            Alert.alert('Success', 'Profile image updated successfully!');
+          } catch (error) {
+            Alert.alert('Error', 'Error uploading image. Please try again.');
+          }
+        }
+      }
+    );
   };
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);  // Cierra la sesión del usuario
-      navigation.navigate('Login');  // Redirige a la pantalla de Login
+      if (!user.description) {
+        Alert.alert('Error', 'Description cannot be empty.');
+        return;
+      }
+
+      if (user.description.length > 150) {
+        Alert.alert('Error', 'Description must be under 150 characters.');
+        return;
+      }
+
+      const userDocRef = doc(db, 'users', user.id);
+      await updateDoc(userDocRef, { description: user.description });
+      await signOut(auth);
+      navigation.navigate('Login');
     } catch (error) {
-      console.log('Error al cerrar sesión:', error.message);
-      alert('Error al cerrar sesión');
+      Alert.alert('Error', 'Error logging out.');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Barra de navegació superior */}
       <View style={styles.topBar}>
         <FSuperior
           onPress={(id) => {
             if (id === 1) navigation.goBack();
-            else if (id === 2) navigation.navigate("Search");
+            else if (id === 2) navigation.navigate('Search');
           }}
         />
       </View>
 
-      {/* Secció de configuració amb recuadro */}
       <View style={styles.settingsContainer}>
         <View style={styles.box}>
-          {/* Foto de perfil i canvi */}
           <View style={styles.profileContainer}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.profileImage} />
             ) : (
               <Text style={styles.photoText}>👤</Text>
             )}
-            <TouchableOpacity style={styles.changeButton} onPress={handleImagePicker}>
+            <TouchableOpacity style={styles.changeButton} onPress={handleImagePicker} accessible accessibilityLabel="Change profile picture">
               <Text style={styles.changeButtonText}>Change</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Nom d'usuari (inmodificable) */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>Username</Text>
-            <Text style={styles.usernameText}>{username}</Text>
+            <Text style={styles.fieldLabel}>Email:</Text>
+            <Text style={styles.usernameText}>{user.email}</Text>
           </View>
 
-          {/* Contrassenya amb funcionalitat de mostrar/ocultar */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>Password</Text>
+            <Text style={styles.fieldLabel}>User ID:</Text>
+            <Text style={styles.usernameText}>{user.id}</Text>
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>User Type:</Text>
+            <Text style={styles.usernameText}>{user.type}</Text>
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Description:</Text>
             <TextInput
-              style={styles.inputField}
-              placeholder="Write here."
-              secureTextEntry={!isPasswordVisible}
-              value={password}
-              onChangeText={setPassword}
+              style={styles.input}
+              multiline
+              value={user.description}
+              onChangeText={(text) => setUser((prevState) => ({ ...prevState, description: text }))}
+              placeholder="Enter your description"
+              maxLength={150}
             />
-            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.toggleButton}>
-              <Text style={styles.toggleButtonText}>
-                {isPasswordVisible ? "Hide" : "Show"}
-              </Text>
-            </TouchableOpacity>
           </View>
 
-          {/* Descripció */}
-          <Text style={styles.descriptionTitle}>Description</Text>
-          <TextInput
-            style={styles.inputDescription}
-            placeholder="Write here."
-            multiline={true}
-          />
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} accessible accessibilityLabel="Log out">
+            <Text style={styles.logoutText}>Log Out</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Botó de tancar sessió */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Log Out</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* Barra de navegació inferior */}
       <View style={styles.bottomBar}>
         <FSection
           currentSection={5}
           onPress={(id) => {
-            if (id === 1) navigation.navigate("All");
-            else if (id === 2) navigation.navigate("Map");
-            else if (id === 3) navigation.navigate("Add");
-            else if (id === 4) navigation.navigate("Favorites");
-            else if (id === 5) navigation.navigate("Account");
+            if (id === 1) navigation.navigate('All');
+            else if (id === 2) navigation.navigate('Map');
+            else if (id === 3) navigation.navigate('Add');
+            else if (id === 4) navigation.navigate('Favorites');
+            else if (id === 5) navigation.navigate('Account');
           }}
         />
       </View>
@@ -121,7 +179,6 @@ export default function Account({ navigation }) {
   );
 }
 
-// Estils
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -131,17 +188,8 @@ const styles = StyleSheet.create({
     height: 80,
     backgroundColor: '#c5bbbb',
     borderBottomWidth: 1,
-    borderBottomColor: '#c5bbbb',
+    borderBottomColor: '#ccc',
     justifyContent: 'flex-end',
-  },
-  bottomBar: {
-    position: 'absolute', // Posiciona absolutament la barra inferior
-    bottom: 0, // Ancorar a la part inferior
-    left: 0,
-    right: 0,
-    backgroundColor: '#c5bbbb', // Fons blanc per la barra inferior
-    borderTopWidth: 1, // Línia superior de la barra
-    borderTopColor: '#ccc', // Color de la línia
   },
   settingsContainer: {
     flex: 1,
@@ -191,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   fieldLabel: {
-    width: 90,
+    width: 100,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -201,35 +249,14 @@ const styles = StyleSheet.create({
     color: '#333',
     paddingVertical: 10,
   },
-  inputField: {
+  input: {
     flex: 1,
-    height: 40,
-    borderColor: '#B0B0B0',
     borderWidth: 1,
-    paddingHorizontal: 10,
-    backgroundColor: '#FFF',
-  },
-  toggleButton: {
-    padding: 5,
-    marginLeft: 5,
-  },
-  toggleButtonText: {
-    color: '#6A6A6A',
-    fontSize: 14,
-  },
-  descriptionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  inputDescription: {
-    height: 100,
-    width: '100%',
-    borderColor: '#B0B0B0',
-    borderWidth: 1,
+    borderColor: '#ccc',
     padding: 10,
+    borderRadius: 5,
+    height: 100,
     textAlignVertical: 'top',
-    backgroundColor: '#FFF',
   },
   logoutButton: {
     backgroundColor: '#F44336',
@@ -242,5 +269,14 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#c5bbbb',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
 });
