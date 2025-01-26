@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from "react-native"
-import Icon from "react-native-vector-icons/Ionicons"
-import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore"
-import { db } from "../Firebase/FirebaseConfig" // Importación correcta de la configuración de Firestore
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { doc, setDoc, getDocs, query, where, collection, updateDoc } from "firebase/firestore";
+import { db } from "../Firebase/FirebaseConfig";
 
 const InfoCard = ({
   title = "Title",
@@ -10,86 +10,111 @@ const InfoCard = ({
   date = "Date",
   location = "Location",
   initialFavorites = false,
-  imageUrl,
-  documentId, // Si es undefined, se generará un nuevo documento
+  imageUrl, // URL de la imagen
+  documentId, // ID del documento para evitar duplicados
   onLocationPress,
 }) => {
-  const [liked, setLiked] = useState(initialFavorites)
-  const [likes, setLikes] = useState(0) // Inicializar likes en 0
-  const [docId, setDocId] = useState(documentId) // Guardar el ID del documento generado
+  const [liked, setLiked] = useState(initialFavorites);
+  const [likes, setLikes] = useState(0);
+  const [docId, setDocId] = useState(documentId);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageSource, setImageSource] = useState(
+    imageUrl ? { uri: imageUrl } : require("../assets/default_image.jpg")
+  );
 
   useEffect(() => {
     const initializeDocument = async () => {
       try {
-        const collectionRef = collection(db, "Preguntas")
-        if (!docId) {
-          // Crear un nuevo documento si no hay un documentId
-          const newDocRef = doc(collectionRef, new Date().getTime().toString()) // Generar un ID único basado en el tiempo
+        const collectionRef = collection(db, "Preguntas");
+
+        // Buscar si hay un documento con TODOS los campos iguales
+        const querySnapshot = await getDocs(
+          query(
+            collectionRef,
+            where("title", "==", title),
+            where("description", "==", description),
+            where("date", "==", date),
+            where("location", "==", location)
+          )
+        );
+
+        if (!querySnapshot.empty) {
+          // Documento exacto encontrado, no hacemos nada
+          const existingDoc = querySnapshot.docs[0];
+          const data = existingDoc.data();
+          setLikes(data.likes || 0);
+          setLiked(data.Favorites || false);
+          setDocId(existingDoc.id);
+
+          console.log("Documento ya existe. No se realizará ninguna acción.");
+        } else {
+          // Crear un nuevo documento si no existe duplicado exacto
+          const newDocRef = doc(collectionRef);
           const newData = {
             title,
             description,
             date,
             location,
             likes: 0,
-            Favorites: initialFavorites,
-          }
-          await setDoc(newDocRef, newData)
-          setDocId(newDocRef.id) // Guardar el nuevo ID generado
-          
-        } else {
-          // Cargar el documento existente
-          const docRef = doc(db, "Preguntas", docId)
-          const docSnap = await getDoc(docRef)
+            Favorites: initialFavorites === true,
+          };
 
-          if (docSnap.exists()) {
-            const data = docSnap.data()
-            setLikes(data.likes || 0)
-            setLiked(data.Favorites || false)
-          } else {
-            console.error("No se encontró el documento.")
+          // Solo agregar `imageUrl` si existe
+          if (imageUrl) {
+            newData.imageUrl = imageUrl;
           }
+
+          await setDoc(newDocRef, newData);
+          setDocId(newDocRef.id);
+          console.log("Documento creado con éxito.");
         }
       } catch (error) {
-        console.error("Error al inicializar documento en Firestore:", error)
-        Alert.alert("Error", "No se pudo inicializar el documento.")
+        console.error("Error inicializando el documento:", error);
+        Alert.alert("Error", "No se pudo inicializar el documento.");
       }
-    }
+    };
 
-    initializeDocument()
-  }, [docId])
+    initializeDocument();
+  }, [title, description, date, location, imageUrl]);
 
   const handleLikePress = async () => {
     try {
-      if (!docId) {
-        console.error("El ID del documento no está definido.")
-        return // Salir de la función si el ID del documento no está definido
-      }
+      if (!docId) return;
 
-      const newLikedState = !liked
-      setLiked(newLikedState)
+      const newLikedState = !liked;
+      setLiked(newLikedState);
 
-      const docRef = doc(db, "Preguntas", docId)
-      const newLikes = newLikedState ? likes + 1 : likes - 1
+      const docRef = doc(db, "Preguntas", docId);
+      const newLikes = newLikedState ? likes + 1 : likes - 1;
 
       await updateDoc(docRef, {
         Favorites: newLikedState,
         likes: newLikes,
-      })
+      });
 
-      setLikes(newLikes)
+      setLikes(newLikes);
     } catch (error) {
-      console.error("Error al actualizar Firestore:", error)
-      Alert.alert("Error", "No se pudieron actualizar los datos.")
+      console.error("Error al actualizar Firestore:", error);
+      Alert.alert("Error", "No se pudo actualizar el documento.");
     }
-  }
+  };
 
-  const imageSource = imageUrl ? { uri: imageUrl } : require("../assets/default_image.jpg")
+  const handleImageError = () => {
+    setImageSource(require("../assets/default_image.jpg")); // Imagen predeterminada
+  };
 
   return (
     <View style={styles.cardContainer}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.rowContainer}>
-        <Image source={imageSource} style={styles.image} />
+        {isLoading && <ActivityIndicator style={styles.loadingIndicator} />}
+        <Image
+          source={imageSource}
+          style={styles.image}
+          onLoadStart={() => setIsLoading(true)}
+          onLoadEnd={() => setIsLoading(false)}
+          onError={handleImageError}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.description}>{description}</Text>
           <Text style={styles.date}>{date}</Text>
@@ -106,8 +131,8 @@ const InfoCard = ({
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -132,6 +157,12 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 10,
     marginRight: 10,
+  },
+  loadingIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -10 }, { translateY: -10 }],
   },
   textContainer: {
     width: "55%",
@@ -162,6 +193,7 @@ const styles = StyleSheet.create({
   likeText: {
     marginLeft: 5,
     fontSize: 14,
+    color: "#555",
   },
   locationButton: {
     flexDirection: "row",
@@ -170,9 +202,8 @@ const styles = StyleSheet.create({
   locationText: {
     marginLeft: 5,
     fontSize: 14,
-    color: "red",
+    color: "#555",
   },
-})
+});
 
-export default InfoCard
-
+export default InfoCard;
