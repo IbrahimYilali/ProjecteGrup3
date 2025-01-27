@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage'; // Afegim el servei de Storage
 
 const firebaseConfig = {
   apiKey: "AIzaSyBxvbwFIkeNyQ5k8SIAGYJ0UPraGCpS4bA",
@@ -16,9 +17,10 @@ const firebaseConfig = {
 // Inicialitzarem l'aplicació de Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicialitzarem els serveis d'Autenticació i Firestore
+// Inicialitzarem els serveis d'Autenticació, Firestore i Storage
 const auth = getAuth(app); // Crearem el servei d'autenticació
 const db = getFirestore(app); // Crearem el servei de base de dades Firestore
+const storage = getStorage(app); // Crearem el servei de Storage
 
 // Exportarem els serveis per utilitzar-los en altres parts de l'aplicació
-export { auth, db };
+export { auth, db, storage };

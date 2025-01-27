@@ -14,7 +14,7 @@ const db = getFirestore(firebaseApp); // Firebase Firestore instance
 const storage = getStorage(firebaseApp); // Firebase Storage instance
 
 export default function Add({ navigation }) {
-    const [image, setImage] = useState(null); // Image state
+    const [image, setImage] = useState(require('../assets/default_image.jpg')); // Set default image initially
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [location, setLocation] = useState({
@@ -30,7 +30,7 @@ export default function Add({ navigation }) {
     useEffect(() => {
         const getPermissions = async () => {
             try {
-                // Demanar permisos de localització
+                // Request location permissions
                 const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
                 if (locationStatus !== 'granted') {
                     alert('Location permission is required');
@@ -38,7 +38,7 @@ export default function Add({ navigation }) {
                 }
                 setHasLocationPermission(true);
 
-                // Demanar permisos de galeria
+                // Request camera roll permissions
                 const { status: cameraRollStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
                 if (cameraRollStatus !== 'granted') {
                     alert('Camera roll permission is required');
@@ -46,7 +46,7 @@ export default function Add({ navigation }) {
                 }
                 setHasCameraRollPermission(true);
 
-                // Si els permisos de localització es concedeixen, obtenir la ubicació actual
+                // If location permission granted, get current location
                 if (locationStatus === 'granted') {
                     const location = await Location.getCurrentPositionAsync({});
                     setLocation({
@@ -62,7 +62,6 @@ export default function Add({ navigation }) {
         getPermissions();
     }, []);
 
-
     // Open image picker
     const handleImagePicker = async () => {
         if (hasCameraRollPermission) {
@@ -76,7 +75,7 @@ export default function Add({ navigation }) {
 
                 if (!result.canceled && result.assets && result.assets.length > 0) {
                     const selectedImageUri = result.assets[0].uri; // URI of the selected image
-                    setImage(selectedImageUri); // Update image state
+                    setImage({ uri: selectedImageUri }); // Update image state
                 }
             } catch (error) {
                 console.log("Error opening gallery:", error);
@@ -133,9 +132,9 @@ export default function Add({ navigation }) {
         };
 
         // If there's an image, upload it to Firebase Storage
-        if (image) {
+        if (image && image.uri) {
             try {
-                const imageUrl = await uploadImageToFirebase(image); // Upload the image
+                const imageUrl = await uploadImageToFirebase(image.uri); // Upload the image
                 newEntry.Image_URL = imageUrl; // Set image URL
             } catch (error) {
                 alert('Error uploading image');
@@ -183,11 +182,7 @@ export default function Add({ navigation }) {
                     <View style={styles.content}>
                         {/* Image section */}
                         <View style={styles.imageContainer}>
-                            {image ? (
-                                <Image source={{ uri: image }} style={styles.image} /> // Show selected image
-                            ) : (
-                                <Image source={require('../assets/default_image.jpg')} style={styles.image} /> // Show default image if none selected
-                            )}
+                            <Image source={image ? image : require('../assets/default_image.jpg')} style={styles.image} /> {/* Show selected image or default */}
                             <TouchableOpacity onPress={handleImagePicker} style={styles.changeImageButton}>
                                 <Text style={styles.buttonText}>Change Image</Text>
                             </TouchableOpacity>
